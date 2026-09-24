@@ -51,3 +51,26 @@ spec:
     targetPort: 8080
   tls:
     termination: edge
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cloudflared
+  namespace: mfec-vm-tools
+spec:
+  containers:
+    - name: cloudflared
+      image: cloudflare/cloudflared:latest
+      args:
+        - tunnel
+        - --no-autoupdate
+        - --url
+        - http://rvtools-report13-svc:8080
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
