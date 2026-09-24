@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rvtools-report13
+  labels:
+    app: rvtools-report13
+spec:
+  containers:
+  - name: httpd
+    image: busybox:1.36
+    command: ["httpd", "-f", "-p", "8080", "-h", "/data"]
+    ports:
+    - containerPort: 8080
+    volumeMounts:
+    - name: html-files
+      mountPath: /data
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
+  volumes:
+  - name: html-files
+    configMap:
+      name: rvtools-report13-cm
+      defaultMode: 0555
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rvtools-report13-svc
+spec:
+  selector:
+    app: rvtools-report13
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: rvtools-report13-route
+spec:
+  to:
+    kind: Service
+    name: rvtools-report13-svc
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge
