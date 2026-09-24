@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: rvtools-report13
+  name: rvtools-report
   labels:
-    app: rvtools-report13
+    app: rvtools-report
 spec:
   containers:
   - name: httpd
@@ -24,16 +24,16 @@ spec:
   volumes:
   - name: html-files
     configMap:
-      name: rvtools-report13-cm
+      name: rvtools-report-cm
       defaultMode: 0555
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: rvtools-report13-svc
+  name: rvtools-report-svc
 spec:
   selector:
-    app: rvtools-report13
+    app: rvtools-report
   ports:
   - port: 8080
     targetPort: 8080
@@ -42,11 +42,11 @@ spec:
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: rvtools-report13-route
+  name: rvtools-report-route
 spec:
   to:
     kind: Service
-    name: rvtools-report13-svc
+    name: rvtools-report-svc
   port:
     targetPort: 8080
   tls:
@@ -65,7 +65,7 @@ spec:
         - tunnel
         - --no-autoupdate
         - --url
-        - http://rvtools-report13-svc:8080
+        - http://rvtools-report-svc:8080
       securityContext:
         allowPrivilegeEscalation: false
         capabilities:
