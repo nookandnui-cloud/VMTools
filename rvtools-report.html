@@ -295,8 +295,19 @@
         <div class="grid cols-4" id="ov-stats"></div>
 
         <div class="panel" style="margin-top:16px;">
+          <h3>ความครบถ้วนของข้อมูลในไฟล์ <span class="tag" id="ov-completeness-tag"></span></h3>
+          <div class="section-desc" style="margin-bottom:12px;">สรุปว่าไฟล์ RVTools นี้มีชีต/คอลัมน์ที่เครื่องมือใช้งานครบหรือไม่ — ช่วยบอกว่าทำไมบางแท็บถึงไม่มีข้อมูลหรือมีข้อมูลไม่ครบ</div>
+          <div class="table-wrap"><table id="tbl-completeness"></table></div>
+        </div>
+
+        <div class="panel" style="margin-top:16px;">
           <h3>ประเด็นที่ควรตรวจสอบ <span class="tag">Key findings</span></h3>
           <ul class="findings" id="ov-findings"></ul>
+        </div>
+
+        <div class="panel no-print">
+          <h3>สรุปภาพรวมสำหรับส่งอีเมล (Compute + Snapshot + Software Expire)</h3>
+          <div id="ov-email-block"></div>
         </div>
 
         <div class="grid cols-2">
@@ -320,8 +331,24 @@
           <h3>สรุปตาม Cluster</h3>
           <div class="table-wrap"><table id="tbl-cluster"></table></div>
         </div>
+
         <div class="panel">
-          <h3>สรุปตาม Host</h3>
+          <h3>รายละเอียดตาม Cluster <span class="tag" id="cp-cluster-detail-tag"></span></h3>
+          <div style="margin-bottom:16px;">
+            <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">เลือก Cluster</label>
+            <select id="cpClusterSelect" style="width:100%; max-width:340px; background:#151C24; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;"></select>
+          </div>
+          <div class="grid cols-2">
+            <div>
+              <div style="font-size:12px; color:var(--muted); margin-bottom:8px; text-align:center;">CPU Utilization (เฉพาะ VM ที่เปิดอยู่)</div>
+              <div class="chart-box small"><canvas id="chart-cp-cluster-cpu"></canvas></div>
+            </div>
+            <div>
+              <div style="font-size:12px; color:var(--muted); margin-bottom:8px; text-align:center;">Memory Utilization (เฉพาะ VM ที่เปิดอยู่)</div>
+              <div class="chart-box small"><canvas id="chart-cp-cluster-mem"></canvas></div>
+            </div>
+          </div>
+          <h3 style="margin-top:20px; font-size:12px;">Host ใน Cluster นี้</h3>
           <div class="table-wrap"><table id="tbl-host"></table></div>
         </div>
 
@@ -861,6 +888,95 @@
     '7.0':{eogs:'2025-10-02'}, '8.0':{eogs:'2027-10-11'},
     '9.0':{eogs:'2027-09-17'}, '9.1':{eogs:'2028-08-12'}
   };
+  /* ===================== post-import data completeness check ===================== */
+  var COMPLETENESS_SPEC = [
+    {sheet:'vInfo', required:true, impact:'Overview, Compute, Storage, VMs, Snapshots, Tools, Software Expire, Security — ทุกแท็บวิเคราะห์ VM',
+      fields:[
+        {label:'VM (ชื่อ)', candidates:['VM']},
+        {label:'Powerstate', candidates:['Powerstate','Power State']},
+        {label:'Template', candidates:['Template']},
+        {label:'CPUs', candidates:['CPUs','Num CPU','NumCpu']},
+        {label:'Memory', candidates:['Memory','Memory MiB','Memory MB']},
+        {label:'Provisioned/In Use MiB', candidates:['Provisioned MiB','Provisioned MB','Provisioned','In Use MiB','In Use MB','In Use']},
+        {label:'Guest OS', candidates:['OS according to the VMware Tools','OS according to the configuration file','Guest OS','OS']},
+        {label:'Cluster', candidates:['Cluster']},
+        {label:'Host', candidates:['Host']},
+        {label:'Tools status', candidates:['Tools','Tools status']},
+        {label:'VI SDK API Version / Server type (vCenter version)', candidates:['VI SDK API Version','VI SDK Server Version','VI SDK Server type']}
+      ]},
+    {sheet:'vHost', required:true, impact:'Compute, Software Expire, Security Awareness, Upgrade Plan (hardware compat)',
+      fields:[
+        {label:'Host', candidates:['Host']},
+        {label:'CPU Model', candidates:['CPU Model']},
+        {label:'# Cores', candidates:['# Cores','NumCores','Cores']},
+        {label:'# Memory', candidates:['# Memory','Memory MiB','Memory']},
+        {label:'ESX Version', candidates:['ESX Version','Version','ESXi Version']},
+        {label:'Build', candidates:['Build','ESX Build']},
+        {label:'CPU/Memory usage %', candidates:['CPU usage %','Memory usage %']}
+      ]},
+    {sheet:'vCluster', required:false, impact:'ไม่ได้ใช้งานโดยตรง (ระบบคำนวณ cluster จาก vHost+vInfo แทน)', fields:[]},
+    {sheet:'vDatastore', required:true, impact:'Storage, Compute Planning, New Sizing',
+      fields:[
+        {label:'Name', candidates:['Name']},
+        {label:'Capacity MiB', candidates:['Capacity MiB','Capacity MB','Capacity']},
+        {label:'Free MiB', candidates:['Free MiB','Free MB','Free']},
+        {label:'Provisioned MiB', candidates:['Provisioned MiB','Provisioned MB','Provisioned']}
+      ]},
+    {sheet:'vSnapshot', required:false, impact:'แท็บ Snapshots',
+      fields:[
+        {label:'VM', candidates:['VM']},
+        {label:'Date / time', candidates:['Date / time','Date/Time','Create Time','Created']},
+        {label:'Size MiB', candidates:['Size MiB (total)','Size MiB (vmsn)','Size MiB','Size MB (total)','Size MB']}
+      ]},
+    {sheet:'vTools', required:false, impact:'แท็บ VMware Tools',
+      fields:[
+        {label:'VM', candidates:['VM']},
+        {label:'Tools status', candidates:['Tools','Tools status','Status']}
+      ]},
+    {sheet:'vMemory', required:false, impact:'Memory Tiering (Compute), Top10 Memory Usage (VMs)',
+      fields:[
+        {label:'VM', candidates:['VM']},
+        {label:'Active', candidates:['Active']}
+      ]},
+    {sheet:'vSwitch', required:false, impact:'แท็บ Diagram (vSwitch)',
+      fields:[{label:'Host', candidates:['Host']},{label:'Switch', candidates:['Switch']}]},
+    {sheet:'vPort', required:false, impact:'แท็บ Diagram (Port Group + VLAN)',
+      fields:[{label:'Port Group', candidates:['Port Group','PortGroup','Port Group Name']},{label:'Switch', candidates:['Switch','vSwitch','SwitchName']},{label:'VLAN', candidates:['VLAN','VLAN ID']}]},
+    {sheet:'dvSwitch', required:false, impact:'แท็บ Diagram (Distributed Switch)',
+      fields:[{label:'Host', candidates:['Host']},{label:'Switch', candidates:['Switch']}]},
+    {sheet:'dvPort', required:false, impact:'แท็บ Diagram (Distributed Port Group)',
+      fields:[{label:'Port Group', candidates:['Port Group','PortGroup','Port Group Name']},{label:'Switch', candidates:['Switch','vSwitch','SwitchName']}]},
+    {sheet:'vNIC', required:false, impact:'แท็บ Diagram (เส้นเชื่อม NIC ↔ Switch)',
+      fields:[{label:'Network Device', candidates:['Network Device','Device','NIC']},{label:'Switch', candidates:['Switch']},{label:'Uplink port', candidates:['Uplink port','Uplink Port','UplinkPort','Uplink']}]},
+    {sheet:'vSC_VMK', required:false, impact:'แท็บ Diagram (VMkernel Ports)',
+      fields:[{label:'Host', candidates:['Host']},{label:'Port Group', candidates:['Port Group','PortGroup']},{label:'IP Address', candidates:['IP Address']}]}
+  ];
+  function fieldFoundInHeaders(headers, candidates){
+    if(!headers) return false;
+    for(var i=0;i<candidates.length;i++){
+      var target = norm(candidates[i]);
+      for(var j=0;j<headers.length;j++){
+        var h = norm(headers[j]);
+        if(h===target || h.indexOf(target)!==-1) return true;
+      }
+    }
+    return false;
+  }
+  function computeDataCompleteness(D){
+    var sd = D.sheetDiag || {};
+    return COMPLETENESS_SPEC.map(function(spec){
+      var info = sd[spec.sheet] || {rows:0, headers:null};
+      var found = info.rows > 0;
+      var missingFields = [];
+      if(found){
+        spec.fields.forEach(function(f){
+          if(!fieldFoundInHeaders(info.headers, f.candidates)) missingFields.push(f.label);
+        });
+      }
+      return {sheet:spec.sheet, required:spec.required, impact:spec.impact, found:found, rows:info.rows, missingFields:missingFields};
+    });
+  }
+
   function versionKey(v){
     var m = String(v==null?'':v).match(/(\d+)\.(\d+)/);
     return m ? (m[1]+'.'+m[2]) : null;
@@ -1051,6 +1167,23 @@
       vSCVMKHeaders: vSC_VMK.length ? Object.keys(vSC_VMK[0]) : null
     };
 
+    // ---- generic sheet/column completeness diagnostics (used for the post-import summary) ----
+    var sheetDiag = {
+      vInfo:      {rows:vInfo.length,      headers: vInfo.length      ? Object.keys(vInfo[0])      : null},
+      vHost:      {rows:vHost.length,      headers: vHost.length      ? Object.keys(vHost[0])      : null},
+      vCluster:   {rows:vCluster.length,   headers: vCluster.length   ? Object.keys(vCluster[0])   : null},
+      vDatastore: {rows:vDatastore.length, headers: vDatastore.length ? Object.keys(vDatastore[0]) : null},
+      vSnapshot:  {rows:vSnapshot.length,  headers: vSnapshot.length  ? Object.keys(vSnapshot[0])  : null},
+      vTools:     {rows:vTools.length,     headers: vTools.length     ? Object.keys(vTools[0])     : null},
+      vMemory:    {rows:vMemory.length,    headers: vMemory.length    ? Object.keys(vMemory[0])    : null},
+      vSwitch:    {rows:vSwitch.length,    headers: netDiag.vSwitchHeaders},
+      vPort:      {rows:vPort.length,      headers: netDiag.vPortHeaders},
+      dvSwitch:   {rows:dvSwitch.length,   headers: netDiag.dvSwitchHeaders},
+      dvPort:     {rows:dvPort.length,     headers: netDiag.dvPortHeaders},
+      vNIC:       {rows:vNicPhys.length,   headers: netDiag.vNicHeaders},
+      vSC_VMK:    {rows:vSC_VMK.length,    headers: netDiag.vSCVMKHeaders}
+    };
+
     // ---- per-VM actual memory usage (vMemory tab: "Active" = actively used memory) ----
     var memActiveByVm = {};
     vMemory.forEach(function(r){
@@ -1164,7 +1297,8 @@
     });
     realVms.forEach(function(v){
       var c = ensureCluster(v.cluster||'-');
-      c.vms += 1; c.vcpu += v.cpus; c.vramMiB += v.memMiB;
+      c.vms += 1;
+      if(v.power.indexOf('on')!==-1){ c.vcpu += v.cpus; c.vramMiB += v.memMiB; }
     });
 
     // ---- datastores ----
@@ -1266,11 +1400,36 @@
       };
     }).filter(function(k){ return k.host; });
 
-    return {filename, vms, realVms, hosts, clusterAgg, datastores, snapshots, toolsRows, hasMemUsageData, vCenterApiVersion, vCenterServer, vCenterBuild, vCenterServerType, vCenterDisplayVersion, switches, portgroups, pnics, vmkernels, netDiag};
+    return {filename, vms, realVms, hosts, clusterAgg, datastores, snapshots, toolsRows, hasMemUsageData, vCenterApiVersion, vCenterServer, vCenterBuild, vCenterServerType, vCenterDisplayVersion, switches, portgroups, pnics, vmkernels, netDiag, sheetDiag};
   }
 
   /* ===================== renderers ===================== */
   function renderOverview(D){
+    // ---- data completeness table ----
+    var completeness = computeDataCompleteness(D);
+    var missingRequired = completeness.filter(function(c){ return c.required && !c.found; });
+    var incompleteOptional = completeness.filter(function(c){ return !c.required && c.found && c.missingFields.length; });
+    var missingOptional = completeness.filter(function(c){ return !c.required && !c.found; });
+    document.getElementById('ov-completeness-tag').innerHTML = missingRequired.length
+      ? '<span class="pill bad">ขาดชีตสำคัญ '+missingRequired.length+' ชีต</span>'
+      : (completeness.some(function(c){return c.found && c.missingFields.length;}) ? '<span class="pill warn">มีบางคอลัมน์ขาด</span>' : '<span class="pill ok">ครบถ้วน</span>');
+    document.getElementById('tbl-completeness').innerHTML =
+      '<thead><tr><th>ชีต</th><th>จำเป็น?</th><th>สถานะ</th><th class="num">แถวข้อมูล</th><th>คอลัมน์สำคัญที่ขาด</th><th>ผลกระทบ</th></tr></thead><tbody>'+
+      completeness.map(function(c){
+        var statusCell;
+        if(!c.found){
+          statusCell = c.required ? '<span class="pill bad">ไม่พบชีต</span>' : '<span class="pill">ไม่พบชีต</span>';
+        }else if(c.missingFields.length){
+          statusCell = '<span class="pill warn">พบชีต แต่ขาดคอลัมน์</span>';
+        }else{
+          statusCell = '<span class="pill ok">ครบถ้วน</span>';
+        }
+        return '<tr><td>'+esc(c.sheet)+'</td><td>'+(c.required?'จำเป็น':'ไม่บังคับ')+'</td><td>'+statusCell+'</td>'+
+          '<td class="num">'+(c.found?fmt(c.rows):'-')+'</td>'+
+          '<td>'+(c.missingFields.length?esc(c.missingFields.join(', ')):(c.found?'-':''))+'</td>'+
+          '<td style="color:var(--muted); font-size:11px;">'+esc(c.impact)+'</td></tr>';
+      }).join('') + '</tbody>';
+
     var total = D.realVms.length;
     var on = D.realVms.filter(function(v){return v.power.indexOf('on')!==-1;}).length;
     var off = D.realVms.filter(function(v){return v.power.indexOf('off')!==-1;}).length;
@@ -1330,51 +1489,145 @@
       data:{ labels: osSorted.map(function(o){return o.k.length>26?o.k.slice(0,26)+'…':o.k;}), datasets:[{data:osSorted.map(function(o){return o.v;}), backgroundColor:'#5AA9E6'}] },
       options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{ticks:{color:'#8B96A3'}, grid:{color:'#232C36'}}, y:{ticks:{color:'#8B96A3', font:{size:10}}, grid:{display:false}}}, maintainAspectRatio:false }
     });
+
+    // ---- overview email summary (Thai + English): Compute + Snapshot + Software Expire ----
+    var onVmsForEmail = D.realVms.filter(function(v){return v.power.indexOf('on')!==-1;});
+    var totalCoresE = D.hosts.reduce(function(a,h){return a+h.cores;},0);
+    var totalHostMemGBE = mibToGB(D.hosts.reduce(function(a,h){return a+h.memMiB;},0));
+    var totalVCPUE = onVmsForEmail.reduce(function(a,v){return a+v.cpus;},0);
+    var totalVRAMGBE = mibToGB(onVmsForEmail.reduce(function(a,v){return a+v.memMiB;},0));
+    var cpuRatioE = totalCoresE>0 ? (totalVCPUE/totalCoresE) : 0;
+    var ramRatioE = totalHostMemGBE>0 ? (totalVRAMGBE/totalHostMemGBE) : 0;
+
+    var clusterLinesTh = [], clusterLinesEn = [];
+    Object.keys(D.clusterAgg).sort().forEach(function(cName){
+      var c = D.clusterAgg[cName];
+      var cCpuPct = c.cores>0 ? (c.vcpu/c.cores*100) : 0;
+      var cMemPct = c.memMiB>0 ? (c.vramMiB/c.memMiB*100) : 0;
+      clusterLinesTh.push('- '+cName+': CPU '+fmt(cCpuPct,1)+'%, Memory '+fmt(cMemPct,1)+'% ('+fmt(c.hosts)+' host, เฉพาะ VM ที่เปิดอยู่)');
+      clusterLinesEn.push('- '+cName+': CPU '+fmt(cCpuPct,1)+'%, Memory '+fmt(cMemPct,1)+'% ('+fmt(c.hosts)+' host(s), powered-on VMs only)');
+    });
+    if(!clusterLinesTh.length){ clusterLinesTh.push('- ไม่พบข้อมูล cluster'); clusterLinesEn.push('- No cluster data found'); }
+
+    var oldSnapE = D.snapshots.filter(function(s){return s.ageDays!=null && s.ageDays>30;});
+    var snapLineTh = D.snapshots.length
+      ? ('พบ Snapshot ทั้งหมด '+D.snapshots.length+' รายการ'+(oldSnapE.length?(' — มีอายุเกิน 30 วัน '+oldSnapE.length+' รายการ ควรพิจารณาลบ/รวม'):' — ไม่มีรายการที่เก่าเกิน 30 วัน'))
+      : 'ไม่พบ Snapshot ในไฟล์นี้';
+    var snapLineEn = D.snapshots.length
+      ? ('Found '+D.snapshots.length+' snapshot(s) total'+(oldSnapE.length?(' — '+oldSnapE.length+' older than 30 days and should be removed/consolidated'):' — none older than 30 days'))
+      : 'No snapshots found in this file';
+
+    var E_ov = computeExpireData(D);
+    var expiredEsxiE = E_ov.esxiRows.filter(function(r){return r.days!=null && r.days<0;});
+    var soonEsxiE = E_ov.esxiRows.filter(function(r){return r.days!=null && r.days>=0 && r.days<=180;});
+    var vcExpiredE = E_ov.vcInfo && E_ov.vcDays!=null && E_ov.vcDays<0;
+    var vcSoonE = E_ov.vcInfo && E_ov.vcDays!=null && E_ov.vcDays>=0 && E_ov.vcDays<=180;
+    var expireLinesTh = [], expireLinesEn = [];
+    if(D.vCenterDisplayVersion){
+      expireLinesTh.push('- vCenter ('+D.vCenterDisplayVersion+'): '+(vcExpiredE?'หมดระยะซัพพอร์ตแล้ว':(vcSoonE?'ใกล้หมดระยะซัพพอร์ต (ภายใน 180 วัน)':'ยังอยู่ในระยะซัพพอร์ต')));
+      expireLinesEn.push('- vCenter ('+D.vCenterDisplayVersion+'): '+(vcExpiredE?'past end of support':(vcSoonE?'end of support within 180 days':'within support')));
+    }
+    expireLinesTh.push('- ESXi Host: หมดระยะซัพพอร์ตแล้ว '+expiredEsxiE.length+' เครื่อง, ใกล้หมด (ภายใน 180 วัน) '+soonEsxiE.length+' เครื่อง จากทั้งหมด '+D.hosts.length+' เครื่อง');
+    expireLinesEn.push('- ESXi Hosts: '+expiredEsxiE.length+' past end of support, '+soonEsxiE.length+' expiring within 180 days, out of '+D.hosts.length+' total');
+    if(!D.vCenterDisplayVersion && !D.hosts.length){ expireLinesTh.push('- ไม่พบข้อมูลเวอร์ชัน ESXi/vCenter ในไฟล์นี้'); expireLinesEn.push('- No ESXi/vCenter version data found in this file'); }
+
+    var ovEmailTh = 'เรื่อง: สรุปภาพรวมระบบ VMware Infrastructure\n\n'+
+      'ภาพรวม Compute:\n'+
+      '- vCPU : pCore = '+fmt(cpuRatioE,2)+' : 1'+(cpuRatioE>4?' (สูงกว่าปกติ ควรตรวจสอบ)':'')+' (เฉพาะ VM ที่เปิดอยู่)\n'+
+      '- vRAM : pRAM = '+fmt(ramRatioE,2)+' : 1'+(ramRatioE>1.5?' (จัดสรรเกินทรัพยากรจริง)':'')+' (เฉพาะ VM ที่เปิดอยู่)\n'+
+      clusterLinesTh.join('\n')+'\n\n'+
+      'สถานะ Snapshot:\n- '+snapLineTh+'\n\n'+
+      'สถานะ Software End of Support:\n'+expireLinesTh.join('\n')+'\n';
+
+    var ovEmailEn = 'Subject: VMware Infrastructure Overview Summary\n\n'+
+      'Compute Overview:\n'+
+      '- vCPU : pCore = '+fmt(cpuRatioE,2)+' : 1'+(cpuRatioE>4?' (higher than typical, review recommended)':'')+' (powered-on VMs only)\n'+
+      '- vRAM : pRAM = '+fmt(ramRatioE,2)+' : 1'+(ramRatioE>1.5?' (over-provisioned relative to physical capacity)':'')+' (powered-on VMs only)\n'+
+      clusterLinesEn.join('\n')+'\n\n'+
+      'Snapshot Status:\n- '+snapLineEn+'\n\n'+
+      'Software End-of-Support Status:\n'+expireLinesEn.join('\n')+'\n';
+
+    renderEmailBlock('ov-email-block', ovEmailTh, ovEmailEn);
   }
 
-  function renderCompute(D){
-    var totalCores = D.hosts.reduce(function(a,h){return a+h.cores;},0);
-    var totalHostMemGB = mibToGB(D.hosts.reduce(function(a,h){return a+h.memMiB;},0));
-    var totalVCPU = D.realVms.reduce(function(a,v){return a+v.cpus;},0);
-    var totalVRAMGB = mibToGB(D.realVms.reduce(function(a,v){return a+v.memMiB;},0));
-    var cpuRatio = totalCores>0 ? (totalVCPU/totalCores) : 0;
-    var ramRatio = totalHostMemGB>0 ? (totalVRAMGB/totalHostMemGB) : 0;
+  var cpComputeState = { wired:false, D:null };
+  function renderComputeClusterDetail(D){
+    var cName = document.getElementById('cpClusterSelect').value;
+    document.getElementById('cp-cluster-detail-tag').textContent = cName;
 
-    document.getElementById('cp-stats').innerHTML = [
-      {lbl:'Physical Cores', val:fmt(totalCores), sub:D.hosts.length+' host'},
-      {lbl:'vCPU : pCore', val:fmt(cpuRatio,2)+' : 1', sub: cpuRatio>4 ? 'อัตราส่วนสูง ควรตรวจสอบ' : 'อยู่ในเกณฑ์ปกติ'},
-      {lbl:'Physical RAM', val:fmt(totalHostMemGB,0)+' GB', sub:'รวมทุก host'},
-      {lbl:'vRAM : pRAM', val:fmt(ramRatio,2)+' : 1', sub: ramRatio>1.5 ? 'จัดสรรเกินทรัพยากรจริง' : 'อยู่ในเกณฑ์ปกติ'}
-    ].map(function(s){ return '<div class="stat"><div class="lbl">'+s.lbl+'</div><div class="val">'+s.val+'</div><div class="sub">'+s.sub+'</div></div>'; }).join('');
-
-    var clusters = Object.keys(D.clusterAgg).map(function(k){return D.clusterAgg[k];}).sort(function(a,b){return b.vms-a.vms;});
-    document.getElementById('tbl-cluster').innerHTML =
-      '<thead><tr><th>Cluster</th><th class="num">Hosts</th><th class="num">VMs</th><th class="num">Physical Cores</th><th class="num">vCPU</th><th class="num">Physical RAM (GB)</th><th class="num">vRAM (GB)</th></tr></thead><tbody>'+
-      clusters.map(function(c){
-        return '<tr><td>'+esc(c.name)+'</td><td class="num">'+fmt(c.hosts)+'</td><td class="num">'+fmt(c.vms)+'</td><td class="num">'+fmt(c.cores)+'</td><td class="num">'+fmt(c.vcpu)+'</td><td class="num">'+fmt(mibToGB(c.memMiB),0)+'</td><td class="num">'+fmt(mibToGB(c.vramMiB),0)+'</td></tr>';
-      }).join('') + '</tbody>';
-
-    var hasHostUsage = D.hosts.some(function(h){ return h.cpuUsagePct!=null || h.memUsagePct!=null; });
-    var hostSorted = D.hosts.slice().sort(function(a,b){return b.vmCount-a.vmCount;});
+    var hostsInCluster = D.hosts.filter(function(h){ return h.cluster===cName; });
+    var hasHostUsageC = hostsInCluster.some(function(h){ return h.cpuUsagePct!=null || h.memUsagePct!=null; });
+    var hostSortedC = hostsInCluster.slice().sort(function(a,b){return b.vmCount-a.vmCount;});
     document.getElementById('tbl-host').innerHTML =
-      '<thead><tr><th>Host</th><th>Cluster</th><th>CPU Model</th><th class="num">Cores</th><th class="num">RAM (GB)</th><th class="num">VMs</th>'+
-      (hasHostUsage ? '<th class="num">CPU Usage %</th><th class="num">Memory Usage %</th>' : '') +
+      '<thead><tr><th>Host</th><th>CPU Model</th><th class="num">Cores</th><th class="num">RAM (GB)</th><th class="num">VMs</th>'+
+      (hasHostUsageC ? '<th class="num">CPU Usage %</th><th class="num">Memory Usage %</th>' : '') +
       '</tr></thead><tbody>'+
-      hostSorted.map(function(h){
-        var row = '<tr><td>'+esc(h.name)+'</td><td>'+esc(h.cluster)+'</td><td>'+esc(h.cpuModel)+'</td><td class="num">'+fmt(h.cores)+'</td><td class="num">'+fmt(mibToGB(h.memMiB),0)+'</td><td class="num">'+fmt(h.vmCount)+'</td>';
-        if(hasHostUsage){
+      hostSortedC.map(function(h){
+        var row = '<tr><td>'+esc(h.name)+'</td><td>'+esc(h.cpuModel)+'</td><td class="num">'+fmt(h.cores)+'</td><td class="num">'+fmt(mibToGB(h.memMiB),0)+'</td><td class="num">'+fmt(h.vmCount)+'</td>';
+        if(hasHostUsageC){
           row += '<td class="num">'+(h.cpuUsagePct!=null?'<span class="pill '+pillClass(h.cpuUsagePct)+'">'+fmt(h.cpuUsagePct,1)+'%</span>':'-')+'</td>';
           row += '<td class="num">'+(h.memUsagePct!=null?'<span class="pill '+pillClass(h.memUsagePct)+'">'+fmt(h.memUsagePct,1)+'%</span>':'-')+'</td>';
         }
         return row+'</tr>';
       }).join('') + '</tbody>';
-
-    if(!hasHostUsage){
+    if(!hasHostUsageC){
       document.getElementById('tbl-host').insertAdjacentHTML('afterend', '<div class="empty-note">หมายเหตุ: ไม่พบข้อมูล CPU/Memory Usage % ของ host ในไฟล์นี้ (ต้องเชื่อมต่อ vCenter แบบสดตอน export)</div>');
     }
 
-    if(!D.hosts.length){
+    // pie charts: CPU/Memory utilization for this cluster — powered-on VMs only (simBaseValues already filters), ratio 1:1
+    var base = simBaseValues(D, cName, {});
+    var cpuPct = base.totalCores>0 ? (base.allocVCPU/base.totalCores*100) : (base.allocVCPU>0?999:0);
+    var memPct = base.totalRamGB>0 ? (base.allocVRamGB/base.totalRamGB*100) : (base.allocVRamGB>0?999:0);
+    renderSimPie('chart-cp-cluster-cpu', cpuPct);
+    renderSimPie('chart-cp-cluster-mem', memPct);
+  }
+
+  function renderCompute(D){
+    var totalCores = D.hosts.reduce(function(a,h){return a+h.cores;},0);
+    var totalHostMemGB = mibToGB(D.hosts.reduce(function(a,h){return a+h.memMiB;},0));
+    var onVmsForRatio = D.realVms.filter(function(v){return v.power.indexOf('on')!==-1;});
+    var totalVCPU = onVmsForRatio.reduce(function(a,v){return a+v.cpus;},0);
+    var totalVRAMGB = mibToGB(onVmsForRatio.reduce(function(a,v){return a+v.memMiB;},0));
+    var cpuRatio = totalCores>0 ? (totalVCPU/totalCores) : 0;
+    var ramRatio = totalHostMemGB>0 ? (totalVRAMGB/totalHostMemGB) : 0;
+
+    document.getElementById('cp-stats').innerHTML = [
+      {lbl:'Physical Cores', val:fmt(totalCores), sub:D.hosts.length+' host'},
+      {lbl:'vCPU : pCore', val:fmt(cpuRatio,2)+' : 1', sub: (cpuRatio>4 ? 'อัตราส่วนสูง ควรตรวจสอบ' : 'อยู่ในเกณฑ์ปกติ')+' (เฉพาะ VM ที่เปิดอยู่)'},
+      {lbl:'Physical RAM', val:fmt(totalHostMemGB,0)+' GB', sub:'รวมทุก host'},
+      {lbl:'vRAM : pRAM', val:fmt(ramRatio,2)+' : 1', sub: (ramRatio>1.5 ? 'จัดสรรเกินทรัพยากรจริง' : 'อยู่ในเกณฑ์ปกติ')+' (เฉพาะ VM ที่เปิดอยู่)'}
+    ].map(function(s){ return '<div class="stat"><div class="lbl">'+s.lbl+'</div><div class="val">'+s.val+'</div><div class="sub">'+s.sub+'</div></div>'; }).join('');
+
+    var clusters = Object.keys(D.clusterAgg).map(function(k){return D.clusterAgg[k];}).sort(function(a,b){return b.vms-a.vms;});
+    document.getElementById('tbl-cluster').innerHTML =
+      '<thead><tr><th>Cluster</th><th class="num">Hosts</th><th class="num">VMs</th><th class="num">Physical Cores</th><th class="num">vCPU (เปิดอยู่)</th><th class="num">Physical RAM (GB)</th><th class="num">vRAM (เปิดอยู่, GB)</th></tr></thead><tbody>'+
+      clusters.map(function(c){
+        return '<tr><td>'+esc(c.name)+'</td><td class="num">'+fmt(c.hosts)+'</td><td class="num">'+fmt(c.vms)+'</td><td class="num">'+fmt(c.cores)+'</td><td class="num">'+fmt(c.vcpu)+'</td><td class="num">'+fmt(mibToGB(c.memMiB),0)+'</td><td class="num">'+fmt(mibToGB(c.vramMiB),0)+'</td></tr>';
+      }).join('') + '</tbody>';
+
+    var hasHostUsage = D.hosts.some(function(h){ return h.cpuUsagePct!=null || h.memUsagePct!=null; });
+
+    // ---- cluster detail dropdown: host table + CPU/Memory utilization pie charts, scoped to one cluster ----
+    var clusterNamesCompute = [];
+    D.hosts.forEach(function(h){ if(h.cluster && clusterNamesCompute.indexOf(h.cluster)===-1) clusterNamesCompute.push(h.cluster); });
+    clusterNamesCompute.sort();
+    var sel = document.getElementById('cpClusterSelect');
+    if(!clusterNamesCompute.length){
+      sel.innerHTML = '';
       document.getElementById('tbl-host').parentElement.innerHTML = '<div class="empty-note">ไม่พบชีต vHost ในไฟล์นี้</div>';
+      document.getElementById('cp-cluster-detail-tag').textContent = '';
+      killChart('chart-cp-cluster-cpu'); killChart('chart-cp-cluster-mem');
+    }else{
+      var prevSelected = sel.value;
+      sel.innerHTML = clusterNamesCompute.map(function(c){ return '<option value="'+esc(c)+'">'+esc(c)+'</option>'; }).join('');
+      sel.value = clusterNamesCompute.indexOf(prevSelected)!==-1 ? prevSelected : clusterNamesCompute[0];
+
+      if(!cpComputeState.wired){
+        cpComputeState.wired = true;
+        sel.addEventListener('change', function(){ renderComputeClusterDetail(D); });
+      }
+      cpComputeState.D = D;
+      renderComputeClusterDetail(D);
     }
 
     // ---- Memory Tiering: Active vs Standby (cold) memory per VM, split by cluster, powered-on VMs only ----
@@ -1834,7 +2087,7 @@
     th_remark: {th:'Remark', en:'Remark'},
     remark_full: {th:'พื้นที่ใกล้เต็ม', en:'Capacity will full'},
     remark_watch: {th:'ควรเฝ้าระวัง', en:'Should be monitored'},
-    note_datastoreLegend: {th:'* Datastore usage 0-74% Normal, 75-84% Warning, 85-100% Alert', en:'* Datastore usage 0-74% Normal, 75-84% Warning, 85-100% Alert'},
+    note_datastoreLegend: {th:'* Datastore usage 0-74% Normal, 75-89% Warning, 90-100% Alert', en:'* Datastore usage 0-74% Normal, 75-89% Warning, 90-100% Alert'},
 
     p_cpuRatioNote: {th:'คำนวณด้วย CPU Ratio (vCPU:pCPU) = {ratio}:1 (ปรับค่าได้ที่แท็บ Compute Planning) — N-1 คือการจำลอง host ที่มีทรัพยากรมากที่สุดในคลัสเตอร์เสียหาย 1 ตัว', en:'Calculated using CPU Ratio (vCPU:pCPU) = {ratio}:1 (adjustable in the Compute Planning tab) — N-1 simulates the failure of the single largest-resource host in the cluster.'},
     note_noClusterData: {th:'ไม่พบข้อมูล cluster ในไฟล์นี้', en:'No cluster data found in this file.'},
@@ -1856,7 +2109,7 @@
     th_hostOnVcenter: {th:'Host on vCenter {server}', en:'Host on vCenter {server}'},
     th_avgCpu: {th:'Average CPU (%)', en:'Average CPU (%)'},
     th_avgMem: {th:'Average Memory (%)', en:'Average Memory (%)'},
-    note_usageLegend: {th:'** Usage: Normal = 0% - 74%, High = 75% - 85%, Critical = 86% - 100% **', en:'** Usage: Normal = 0% - 74%, High = 75% - 85%, Critical = 86% - 100% **'},
+    note_usageLegend: {th:'** Usage: Normal = 0% - 74%, Warning = 75% - 89%, Critical = 90% - 100% **', en:'** Usage: Normal = 0% - 74%, Warning = 75% - 89%, Critical = 90% - 100% **'},
 
     th_noCol: {th:'No', en:'No'},
     th_version: {th:'Version', en:'Version'},
@@ -1931,9 +2184,9 @@
     var preparedby = (document.getElementById('inp-preparedby').value||'').trim();
 
     var totalCores = D.hosts.reduce(function(a,h){return a+h.cores;},0);
-    var totalVCPU = D.realVms.reduce(function(a,v){return a+v.cpus;},0);
-    var lowDS = D.datastores.filter(function(d){return d.usedPct>=85;});
-    var warnDS = D.datastores.filter(function(d){return d.usedPct>=75 && d.usedPct<85;});
+    var totalVCPU = D.realVms.filter(function(v){return v.power.indexOf('on')!==-1;}).reduce(function(a,v){return a+v.cpus;},0);
+    var lowDS = D.datastores.filter(function(d){return d.usedPct>=90;});
+    var warnDS = D.datastores.filter(function(d){return d.usedPct>=75 && d.usedPct<90;});
     var dsOverallStatus = lowDS.length ? {cls:'bad',label:T('st_critical')} : (warnDS.length ? {cls:'warn',label:T('st_warning')} : {cls:'ok',label:T('st_normal')});
     var oldSnap = D.snapshots.filter(function(s){return s.ageDays!=null && s.ageDays>30;});
     var tplRatioInput = document.getElementById('simCpuRatio');
@@ -1968,8 +2221,8 @@
     html += '<table><thead><tr><th>'+T('th_no')+'</th><th>'+T('fld_hostname')+'</th><th class="num">'+T('th_cores')+'</th><th class="num">'+T('th_cpuUsage')+'</th><th class="num">'+T('th_memGB')+'</th><th class="num">'+T('th_memUsage')+'</th><th>'+T('th_status')+'</th></tr></thead><tbody>';
     D.hosts.forEach(function(h, i){
       var worst = Math.max(h.cpuUsagePct||0, h.memUsagePct||0);
-      var stcls = worst>=85 ? 'bad' : (worst>=75 ? 'warn' : 'ok');
-      var stlabel = (h.cpuUsagePct==null && h.memUsagePct==null) ? '-' : (worst>=85?T('st_critical'):(worst>=75?T('st_warning'):T('st_normal')));
+      var stcls = worst>=90 ? 'bad' : (worst>=75 ? 'warn' : 'ok');
+      var stlabel = (h.cpuUsagePct==null && h.memUsagePct==null) ? '-' : (worst>=90?T('st_critical'):(worst>=75?T('st_warning'):T('st_normal')));
       html += '<tr><td>'+(i+1)+'</td><td>'+esc(h.name)+'</td><td class="num">'+fmt(h.cores)+'</td>'+
         '<td class="num">'+(h.cpuUsagePct!=null?fmt(h.cpuUsagePct,1):'-')+'</td>'+
         '<td class="num">'+fmt(mibToGB(h.memMiB),0)+'</td>'+
@@ -2001,7 +2254,7 @@
     html += '<h5 class="tpl-h2">'+T('h_datastore')+'</h5>';
     html += '<table><thead><tr><th>'+T('th_datastoreName')+'</th><th class="num">'+T('th_capacityGB')+'</th><th class="num">'+T('th_freeGB')+'</th><th class="num">'+T('th_usedPct')+'</th><th>'+T('th_remark')+'</th></tr></thead><tbody>';
     D.datastores.slice().sort(function(a,b){return b.usedPct-a.usedPct;}).forEach(function(d){
-      var remark = d.usedPct>=85 ? T('remark_full') : (d.usedPct>=75 ? T('remark_watch') : '');
+      var remark = d.usedPct>=90 ? T('remark_full') : (d.usedPct>=75 ? T('remark_watch') : '');
       html += '<tr><td>'+esc(d.name)+'</td><td class="num">'+fmt(mibToGB(d.capMiB),0)+'</td><td class="num">'+fmt(mibToGB(d.freeMiB),0)+'</td><td class="num">'+fmt(d.usedPct,2)+'</td><td>'+esc(remark)+'</td></tr>';
     });
     html += '</tbody></table>';
@@ -2253,9 +2506,9 @@
     var pmdate = (document.getElementById('inp-pmdate').value||'').trim() || T('datePh');
     var preparedby = (document.getElementById('inp-preparedby').value||'').trim() || T('preparedByPh');
     var totalCores = D.hosts.reduce(function(a,h){return a+h.cores;},0);
-    var totalVCPU = D.realVms.reduce(function(a,v){return a+v.cpus;},0);
-    var lowDS = D.datastores.filter(function(d){return d.usedPct>=85;});
-    var warnDS = D.datastores.filter(function(d){return d.usedPct>=75 && d.usedPct<85;});
+    var totalVCPU = D.realVms.filter(function(v){return v.power.indexOf('on')!==-1;}).reduce(function(a,v){return a+v.cpus;},0);
+    var lowDS = D.datastores.filter(function(d){return d.usedPct>=90;});
+    var warnDS = D.datastores.filter(function(d){return d.usedPct>=75 && d.usedPct<90;});
     var oldSnap = D.snapshots.filter(function(s){return s.ageDays!=null && s.ageDays>30;});
     var children = [];
 
@@ -2279,7 +2532,7 @@
     children.push(docxTable(['No.','Hostname','Cores','% CPU','Memory (GB)','% Memory','Status'],
       D.hosts.map(function(h,i){
         var worst = Math.max(h.cpuUsagePct||0, h.memUsagePct||0);
-        var stlabel = (h.cpuUsagePct==null && h.memUsagePct==null) ? '-' : (worst>=85?T('st_critical'):(worst>=75?T('st_warning'):T('st_normal')));
+        var stlabel = (h.cpuUsagePct==null && h.memUsagePct==null) ? '-' : (worst>=90?T('st_critical'):(worst>=75?T('st_warning'):T('st_normal')));
         return [i+1, h.name, {text:fmt(h.cores),right:true}, {text:h.cpuUsagePct!=null?fmt(h.cpuUsagePct,1):'-',right:true}, {text:fmt(mibToGB(h.memMiB),0),right:true}, {text:h.memUsagePct!=null?fmt(h.memUsagePct,1):'-',right:true}, stlabel];
       })
     ));
@@ -2302,7 +2555,7 @@
     children.push(docxHeading(T('h_datastore'), 2));
     children.push(docxTable(['Datastore','Capacity (GB)','Free (GB)','Used (%)','Remark'],
       D.datastores.slice().sort(function(a,b){return b.usedPct-a.usedPct;}).map(function(d){
-        var remark = d.usedPct>=85 ? T('remark_full') : (d.usedPct>=75 ? T('remark_watch') : '');
+        var remark = d.usedPct>=90 ? T('remark_full') : (d.usedPct>=75 ? T('remark_watch') : '');
         return [d.name, {text:fmt(mibToGB(d.capMiB),0),right:true}, {text:fmt(mibToGB(d.freeMiB),0),right:true}, {text:fmt(d.usedPct,2),right:true}, remark];
       })
     ));
@@ -2479,6 +2732,7 @@
     hostOverride = hostOverride || {};
     var hostsIn = simEffectiveHosts(D, clusterFilter, hostOverride);
     var vmsIn = clusterFilter && clusterFilter!=='ALL' ? D.realVms.filter(function(v){return v.cluster===clusterFilter;}) : D.realVms;
+    vmsIn = vmsIn.filter(function(v){return v.power.indexOf('on')!==-1;});
     var totalCores = hostsIn.reduce(function(a,h){return a+h.cores;},0);
     var totalRamGB = mibToGB(hostsIn.reduce(function(a,h){return a+h.memMiB;},0));
     var totalStorageTB = mibToTB(D.datastores.reduce(function(a,d){return a+d.capMiB;},0));
@@ -2602,34 +2856,48 @@
     document.getElementById('sim-storage-tag').textContent = fmt(stPct,1)+'%';
 
     // ---- N-1 host failure simulation: use the highest-resource host, independently per resource ----
+    // Candidate pool = real remaining hosts in this cluster AND the hypothetical "added" host spec (if any hosts were added).
+    // Pick whichever is larger for each resource so the simulation still works even if all real hosts were excluded.
     var n1Note = document.getElementById('sim-n1-note');
     var n1Charts = document.getElementById('sim-n1-charts');
     var n1Tag = document.getElementById('sim-n1-tag');
     var n1CpuPct = null, n1MemPct = null;
-    if(newHostCount < 2 || (!base.largestByCores && !base.largestByRam)){
+    var realFailCores = base.largestByCores ? base.largestByCores.cores : 0;
+    var realFailRamGB = base.largestByRam ? mibToGB(base.largestByRam.memMiB) : 0;
+    var addedFailCores = hostDelta > 0 ? coresPerHost : 0;
+    var addedFailRamGB = hostDelta > 0 ? ramPerHost : 0;
+    var hasAnyFailoverCandidate = base.largestByCores || base.largestByRam || hostDelta > 0;
+
+    if(newHostCount < 2 || !hasAnyFailoverCandidate){
       n1Note.style.display = 'block';
       n1Note.textContent = newHostCount < 2
         ? 'ต้องมี host อย่างน้อย 2 ตัวขึ้นไปในคลัสเตอร์นี้ (หลังปรับจำนวนแล้ว) จึงจะจำลอง N-1 ได้'
-        : 'ไม่พบข้อมูล host จริงในคลัสเตอร์นี้สำหรับใช้จำลอง host ที่ล่ม';
+        : 'ไม่พบ host จริงหรือ host ที่เพิ่มใหม่ในคลัสเตอร์นี้สำหรับใช้จำลอง host ที่ล่ม';
       n1Charts.style.display = 'none';
       n1Tag.textContent = '';
     }else{
       n1Charts.style.display = '';
       n1Note.style.display = 'none';
-      var failedCoresHost = base.largestByCores;
-      var failedRamHost = base.largestByRam;
-      var n1Cores = Math.max(0, newCores - (failedCoresHost?failedCoresHost.cores:0));
-      var n1RamGB = Math.max(0, newRamGB - (failedRamHost?mibToGB(failedRamHost.memMiB):0));
+      var useAddedForCores = addedFailCores > realFailCores;
+      var useAddedForRam = addedFailRamGB > realFailRamGB;
+      var failCoresVal = Math.max(realFailCores, addedFailCores);
+      var failRamGBVal = Math.max(realFailRamGB, addedFailRamGB);
+
+      var n1Cores = Math.max(0, newCores - failCoresVal);
+      var n1RamGB = Math.max(0, newRamGB - failRamGBVal);
       var n1EffectiveCores = n1Cores * cpuRatio;
       n1CpuPct = n1EffectiveCores>0 ? (base.allocVCPU/n1EffectiveCores*100) : (base.allocVCPU>0?999:0);
       n1MemPct = n1RamGB>0 ? (base.allocVRamGB/n1RamGB*100) : (base.allocVRamGB>0?999:0);
       renderSimPie('chart-sim-n1-cpu', n1CpuPct, 'CPU N-1');
       renderSimPie('chart-sim-n1-mem', n1MemPct, 'Memory N-1');
       var n1Bad = n1CpuPct>100 || n1MemPct>100;
-      var sameHost = failedCoresHost && failedRamHost && failedCoresHost.name===failedRamHost.name;
-      var whoTxt = sameHost
-        ? ('จำลองเสีย: '+esc(failedCoresHost.name)+' ('+fmt(failedCoresHost.cores)+' cores, '+fmt(mibToGB(failedCoresHost.memMiB),0)+' GB) — ใหญ่สุดทั้ง CPU และ Memory')
-        : ('จำลองเสีย (CPU): '+esc(failedCoresHost?failedCoresHost.name:'-')+' ('+fmt(failedCoresHost?failedCoresHost.cores:0)+' cores) · จำลองเสีย (Memory): '+esc(failedRamHost?failedRamHost.name:'-')+' ('+fmt(failedRamHost?mibToGB(failedRamHost.memMiB):0,0)+' GB)');
+
+      var cpuSrcTxt = useAddedForCores ? ('host ที่เพิ่มใหม่ ('+fmt(addedFailCores,0)+' cores)') : (base.largestByCores ? (esc(base.largestByCores.name)+' ('+fmt(base.largestByCores.cores)+' cores)') : '-');
+      var ramSrcTxt = useAddedForRam ? ('host ที่เพิ่มใหม่ ('+fmt(addedFailRamGB,0)+' GB)') : (base.largestByRam ? (esc(base.largestByRam.name)+' ('+fmt(mibToGB(base.largestByRam.memMiB),0)+' GB)') : '-');
+      var sameSource = (useAddedForCores===useAddedForRam) && (useAddedForCores || (base.largestByCores && base.largestByRam && base.largestByCores.name===base.largestByRam.name));
+      var whoTxt = sameSource
+        ? ('จำลองเสีย: '+(useAddedForCores?('host ที่เพิ่มใหม่ ('+fmt(failCoresVal,0)+' cores, '+fmt(failRamGBVal,0)+' GB)'):(esc(base.largestByCores.name)+' ('+fmt(failCoresVal,0)+' cores, '+fmt(failRamGBVal,0)+' GB)'))+' — ใหญ่สุดทั้ง CPU และ Memory')
+        : ('จำลองเสีย (CPU): '+cpuSrcTxt+' · จำลองเสีย (Memory): '+ramSrcTxt);
       n1Tag.innerHTML = '<span class="pill '+(n1Bad?'bad':'ok')+'">'+(n1Bad?'เกินขีดความสามารถหาก host ล่ม':'รองรับได้หาก host ล่ม 1 ตัว')+'</span> '+whoTxt;
     }
 
