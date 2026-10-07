@@ -9,32 +9,41 @@
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 <style>
   :root{
-    --ink:#121820;
-    --panel:#1A222B;
-    --panel-2:#20293380;
-    --border:#2C3742;
-    --text:#E7ECF2;
-    --muted:#8B96A3;
-    --ok:#3ED2A0;
-    --warn:#F0A857;
-    --bad:#E2596B;
-    --info:#5AA9E6;
-    --mono:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    --disp:'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --ink:#dfe4ea;
+    --panel:#ffffff;
+    --panel-2:#f6f9fc;
+    --border:#e5edf5;
+    --text:#061b31;
+    --muted:#64748d;
+    --ok:#15be53;
+    --warn:#9b6829;
+    --bad:#ea2261;
+    --info:#533afd;
+    --accent:#533afd;
+    --accent-hover:#4434d4;
+    --accent-light:#b9b9f9;
+    --accent-bg:#f0f0ff;
+    --shadow-blue:rgba(50,50,93,0.25);
+    --shadow-black:rgba(0,0,0,0.1);
+    --shadow-ambient:rgba(23,23,23,0.08);
+    --shadow-soft:rgba(23,23,23,0.06);
+    --mono:'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --disp:'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   }
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600&family=Source+Code+Pro:wght@400;500;700&display=swap');
 
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{height:100%;}
   body{
     background:var(--ink);
     color:var(--text);
-    font-family:var(--mono);
-    font-size:13.5px;
-    line-height:1.55;
+    font-family:var(--disp);
+    font-size:14px;
+    line-height:1.5;
     -webkit-font-smoothing:antialiased;
+    font-feature-settings:"ss01","tnum";
   }
-  h1,h2,h3,.disp{font-family:var(--disp);}
+  h1,h2,h3,.disp{font-family:var(--disp);font-weight:300;letter-spacing:-0.02em;color:var(--text);}
 
   a{color:var(--info);}
 
@@ -42,12 +51,17 @@
   .shell{ display:flex; min-height:100vh; }
 
   .rail{
-    width:212px; flex:0 0 212px;
-    background:#151C24;
+    width:220px;
+    flex:0 0 220px;
+    background:var(--panel);
     border-right:1px solid var(--border);
     padding:20px 0;
-    display:flex; flex-direction:column;
-    position:sticky; top:0; height:100vh;
+    display:flex;
+    flex-direction:column;
+    position:sticky;
+    top:0;
+    height:100vh;
+    box-shadow:var(--shadow-soft) 1px 0 3px;
   }
   .rail .brand{
     padding:0 20px 18px 20px;
@@ -55,24 +69,41 @@
     margin-bottom:14px;
   }
   .rail .brand .mark{
-    font-family:var(--disp); font-weight:700; font-size:17px; letter-spacing:.2px;
+    font-family:var(--disp);
+    font-weight:600;
+    font-size:18px;
+    letter-spacing:-0.02em;
     color:var(--text);
   }
   .rail .brand .mark span{color:var(--ok);}
   .rail .brand .sub{color:var(--muted); font-size:11px; margin-top:3px;}
 
   .nav-item{
-    display:flex; align-items:center; gap:10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
     padding:9px 20px;
-    color:var(--muted);
+    color:#374151;
+    font-size:14px;
     cursor:pointer;
-    border-left:2px solid transparent;
-    font-size:12.5px;
-    transition:background .12s ease, color .12s ease;
+    border-radius:4px;
+    margin:2px 8px;
+    font-family:var(--disp);
+    transition:background 0.15s ease;
+  }
+  .nav-item:hover{
+    background:#e5e7eb;
+    color:#1f2937;
+    font-weight:500;
+  }
+  .nav-item.active{
+    background:#d1d5db;
+    color:#111827;
+    font-weight:600;
   }
   .nav-item .dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex:0 0 auto;}
-  .nav-item:hover{ color:var(--text); background:#1B2430; }
-  .nav-item.active{ color:var(--text); background:#1B2430; border-left-color:var(--ok); }
+  .nav-item:hover{ color:#111827; background:#e5e7eb; }
+  .nav-item.active{ color:#111827; background:#d1d5db; border-left-color:var(--ok); }
   .nav-item.active .dot{background:var(--ok);}
   .nav-item.disabled{ opacity:.35; cursor:default; }
   .nav-item.disabled:hover{ background:transparent; color:var(--muted); }
@@ -97,10 +128,40 @@
   .statusbar .fileinfo b{ color:var(--text); font-weight:500; }
   .btnrow{ display:flex; gap:8px; }
   button{
-    font-family:var(--mono); font-size:12px;
-    background:#212B36; color:var(--text);
-    border:1px solid var(--border); border-radius:3px;
-    padding:8px 14px; cursor:pointer;
+    font-family:var(--disp);
+    font-size:14px;
+    font-weight:400;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:8px 16px;
+    border-radius:4px;
+    cursor:pointer;
+    transition:background 0.15s ease;
+  }
+  button:hover{
+    background:var(--accent-hover);
+  }
+  .btn-primary{
+    background:var(--accent);
+    color:#ffffff;
+    font-weight:500;
+    box-shadow:var(--shadow-soft) 0px 2px 4px;
+  }
+  .btn-primary:hover{
+    background:var(--accent-hover);
+    box-shadow:var(--shadow-ambient) 0px 4px 8px;
+  }
+  .btn-secondary{
+    background:var(--panel);
+    color:var(--text);
+    border:1px solid var(--border);
+    font-weight:400;
+  }
+  .btn-secondary:hover{
+    background:var(--panel-2);
+    border-color:var(--accent-light);
+    color:var(--accent);
   }
   button:hover{ border-color:#3D4A58; background:#26313D; }
   button.primary{ background:var(--ok); color:#0C1712; border-color:var(--ok); font-weight:600; }
@@ -127,11 +188,23 @@
   .section{ display:none; }
   .section.active{ display:block; }
   .section-title{
-    font-size:20px; font-weight:600; margin-bottom:4px;
+    font-size:22px;
+    font-weight:300;
+    margin-bottom:4px;
+    letter-spacing:-0.02em;
+    color:var(--text);
   }
-  .section-desc{ color:var(--muted); font-size:12px; margin-bottom:22px; }
+  .section-desc{
+    font-size:14px;
+    color:var(--muted);
+    margin-bottom:16px;
+    line-height:1.5;
+  }
 
-  .grid{ display:grid; gap:14px; }
+  .grid{
+    display:grid;
+    gap:16px;
+  }
   .grid.cols-4{ grid-template-columns:repeat(4,1fr); }
   .grid.cols-3{ grid-template-columns:repeat(3,1fr); }
   .grid.cols-2{ grid-template-columns:repeat(2,1fr); }
@@ -140,8 +213,10 @@
   .stat{
     background:var(--panel);
     border:1px solid var(--border);
-    border-left:2px solid var(--border);
+    border-left:3px solid var(--accent);
+    border-radius:6px;
     padding:14px 16px;
+    box-shadow:var(--shadow-soft) 0px 2px 4px;
   }
   .stat .lbl{ color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.4px; }
   .stat .val{ font-family:var(--disp); font-size:26px; font-weight:600; margin-top:6px; }
@@ -154,11 +229,21 @@
   .panel{
     background:var(--panel);
     border:1px solid var(--border);
+    border-radius:6px;
     padding:18px 20px;
-    margin-bottom:16px;
+    box-shadow:var(--shadow-soft) 0px 2px 4px;
   }
   .panel h3{ font-size:13.5px; font-weight:600; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; }
-  .panel h3 .tag{ font-size:10px; color:var(--muted); font-weight:400; text-transform:uppercase; letter-spacing:.4px; }
+  .panel h3 .tag{
+    font-size:11px;
+    color:var(--accent);
+    font-weight:500;
+    background:var(--accent-bg);
+    border:1px solid var(--accent-light);
+    border-radius:4px;
+    padding:2px 8px;
+    font-family:var(--disp);
+  }
 
   .findings{ list-style:none; }
   .findings li{
@@ -175,38 +260,91 @@
 
   table{ width:100%; border-collapse:collapse; font-size:12px; }
   thead th{
-    text-align:left; color:var(--muted); font-weight:500;
-    font-size:10.5px; text-transform:uppercase; letter-spacing:.3px;
-    padding:6px 10px; border-bottom:1px solid var(--border);
-    position:sticky; top:0; background:var(--panel);
+    text-align:left;
+    color:var(--muted);
+    font-weight:500;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:10px 12px;
+    border-bottom:1px solid var(--border);
+    background:var(--panel-2);
+    font-family:var(--disp);
   }
   tbody td{ padding:7px 10px; border-bottom:1px solid #232C36; color:var(--text); }
-  tbody tr:hover{ background:#20293380; }
+  tbody tr:hover{ background:#F0F2F580; }
   td.num, th.num{ text-align:right; font-variant-numeric:tabular-nums; }
-  .table-wrap{ max-height:420px; overflow:auto; border:1px solid var(--border); }
-  .table-wrap table thead th{ background:#1A222B; }
+  .table-wrap{
+    max-height:420px;
+    overflow:auto;
+    border:1px solid var(--border);
+    border-radius:6px;
+    box-shadow:var(--shadow-soft) 0px 2px 4px;
+  }
+  .table-wrap table thead th{
+    text-align:left;
+    color:var(--muted);
+    font-weight:500;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:10px 12px;
+    border-bottom:1px solid var(--border);
+    background:var(--panel-2);
+    font-family:var(--disp);
+  }
 
-  .bar-track{ background:#232C36; height:8px; border-radius:2px; overflow:hidden; }
-  .bar-fill{ height:100%; background:var(--ok); }
+  .bar-track{
+    background:var(--panel-2);
+    height:6px;
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .bar-fill{
+    height:100%;
+    border-radius:4px;
+    transition:width 0.3s ease;
+  }
   .bar-fill.warn{ background:var(--warn); }
   .bar-fill.bad{ background:var(--bad); }
 
-  .pill{ display:inline-block; padding:2px 8px; border-radius:2px; font-size:10.5px; border:1px solid var(--border); color:var(--muted); }
+  .pill{
+    display:inline-block;
+    padding:2px 8px;
+    border-radius:4px;
+    font-size:11px;
+    font-weight:500;
+    font-family:var(--disp);
+  }
   .pill.ok{ color:var(--ok); border-color:#2A5A47; }
   .pill.warn{ color:var(--warn); border-color:#5A4A2A; }
   .pill.bad{ color:var(--bad); border-color:#5A2A32; }
 
-  .chart-box{ position:relative; height:260px; }
+  .chart-box{
+    position:relative;
+    height:260px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:12px;
+    box-shadow:var(--shadow-soft) 0px 2px 4px;
+  }
   .chart-box.small{ height:200px; }
 
-  .empty-note{ color:var(--muted); font-size:12px; padding:20px 0; }
+  .empty-note{
+    color:var(--muted);
+    font-size:14px;
+    padding:16px;
+    text-align:center;
+    font-family:var(--disp);
+  }
 
   .email-block{ margin-bottom:14px; }
   .email-block .email-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
   .email-block .email-lang{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; }
   .email-block textarea{
     width:100%; min-height:170px; resize:vertical;
-    background:#151C24; border:1px solid var(--border); color:var(--text);
+    background:#F2F4F7; border:1px solid var(--border); color:var(--text);
     font-family:var(--mono); font-size:12px; line-height:1.6; padding:12px;
   }
   .email-copy-btn{ font-size:11px; padding:5px 12px; }
@@ -216,7 +354,7 @@
   .tpl-lang-btn.active{ background:var(--ok); color:#0C1712; border-color:var(--ok); font-weight:600; }
 
   ::-webkit-scrollbar{ width:8px; height:8px; }
-  ::-webkit-scrollbar-thumb{ background:#2C3742; border-radius:4px; }
+  ::-webkit-scrollbar-thumb{ background:#D0D5DD; border-radius:4px; }
   ::-webkit-scrollbar-track{ background:transparent; }
 
   /* ---------- print ---------- */
@@ -226,8 +364,26 @@
     .main{ padding:0; }
     .section{ display:none !important; }
     #sec-template{ display:block !important; }
-    .panel, .stat{ background:#fff; border-color:#ccc; }
-    thead th{ background:#fff; color:#333; }
+    .panel, .stat{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-left:3px solid var(--accent);
+    border-radius:6px;
+    padding:14px 16px;
+    box-shadow:var(--shadow-soft) 0px 2px 4px;
+  }
+    thead th{
+    text-align:left;
+    color:var(--muted);
+    font-weight:500;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:10px 12px;
+    border-bottom:1px solid var(--border);
+    background:var(--panel-2);
+    font-family:var(--disp);
+  }
     .findings .txt{ color:#333; }
     .statusbar{ border-color:#ccc; }
   }
@@ -261,28 +417,28 @@
       <div class="sub">RVTools export analyzer</div>
     </div>
     <div id="nav"></div>
-    <div class="rail-foot">ประมวลผลในเบราว์เซอร์ทั้งหมด<br>ไม่มีการอัปโหลดไฟล์ขึ้นเซิร์ฟเวอร์</div>
+    <div class="rail-foot">Processed entirely in browser<br>No files uploaded to server</div>
   </div>
 
   <div class="main">
     <div class="statusbar">
-      <div class="fileinfo" id="fileinfo">ยังไม่ได้โหลดไฟล์ RVTools</div>
+      <div class="fileinfo" id="fileinfo">No RVTools file loaded</div>
       <div class="btnrow">
-        <button id="btnReplace" style="display:none;">เปลี่ยนไฟล์</button>
-        <button id="btnExportWord" class="no-print" style="display:none;">Export (.docx)</button>
-        <button id="btnPrint" class="primary" style="display:none;">Export Report (Print/PDF)</button>
+        <button id="btnReplace" class="btn-secondary" style="display:none;">Replace file</button>
+        <button id="btnExportWord" class="btn-secondary no-print" style="display:none;">Export (.docx)</button>
+        <button id="btnPrint" class="btn-primary no-print" style="display:none;">Export Report (Print/PDF)</button>
       </div>
     </div>
 
     <div id="dropzone" class="dropzone">
-      <h2>นำเข้าไฟล์ RVTools (.xlsx)</h2>
-      <p>ลากไฟล์มาวาง หรือกดปุ่มด้านล่างเพื่อเลือกไฟล์ — ระบบจะสร้างรายงานสรุปให้ทันที</p>
-      <button class="primary" id="btnPick">เลือกไฟล์ RVTools</button>
+      <h2>Import RVTools file (.xlsx)</h2>
+      <p>Drag & drop file or click button below — report will be generated instantly</p>
+      <button class="primary" id="btnPick">Select RVTools file</button>
       <input type="file" id="fileInput" accept=".xlsx,.xls">
       <div class="hint">
-        <div style="margin-bottom:6px;"><b style="color:#8B96A3;">ชีตหลัก</b> (ใช้ในแทบทุกแท็บ — Overview, Compute, Storage, VMs, Snapshots, Tools, Software Expire, Security, Compute Planning, New Sizing, Upgrade Plan, MFEC Template Report):<br>vInfo · vHost · vCluster · vDatastore · vSnapshot · vTools · vMemory</div>
-        <div><b style="color:#8B96A3;">ใช้เฉพาะแท็บ Diagram</b> (network topology):<br>vSwitch · vPort · dvSwitch · dvPort · vNIC · vSC_VMK</div>
-        <div style="margin-top:8px; color:#48545F;">ไม่จำเป็นต้องมีครบทุกชีต — ถ้าชีตไหนขาดไป ฟีเจอร์ที่เกี่ยวข้องจะแจ้งเตือนตรงจุดแทนการแสดงข้อมูลผิดพลาด</div>
+        <div style="margin-bottom:6px;"><b style="color:#667085;">Main sheets</b> (ใช้ในแทบทุกแท็บ — Overview, Compute, Storage, VMs, Snapshots, Tools, Software Expire, Security, Compute Planning, New Sizing, Upgrade Plan, MFEC Report):<br>vInfo · vHost · vCluster · vDatastore · vSnapshot · vTools · vMemory</div>
+        <div><b style="color:#667085;">Diagram tab only</b> (network topology):<br>vSwitch · vPort · dvSwitch · dvPort · vNIC · vSC_VMK</div>
+        <div style="margin-top:8px; color:#98A2B3;">Not all sheets required — missing sheets will trigger warningsจุดแทนการแสดงข้อมูลผิดพลาด</div>
       </div>
     </div>
 
@@ -290,33 +446,33 @@
 
       <!-- OVERVIEW -->
       <section class="section active" id="sec-overview">
-        <div class="section-title">ภาพรวม (Executive Summary)</div>
-        <div class="section-desc">สรุปสถานะ Virtual Infrastructure จากไฟล์ที่นำเข้า</div>
+        <div class="section-title">Executive Summary</div>
+        <div class="section-desc">Virtual Infrastructure status summary from imported file</div>
         <div class="grid cols-4" id="ov-stats"></div>
 
         <div class="panel" style="margin-top:16px;">
-          <h3>ความครบถ้วนของข้อมูลในไฟล์ <span class="tag" id="ov-completeness-tag"></span></h3>
-          <div class="section-desc" style="margin-bottom:12px;">สรุปว่าไฟล์ RVTools นี้มีชีต/คอลัมน์ที่เครื่องมือใช้งานครบหรือไม่ — ช่วยบอกว่าทำไมบางแท็บถึงไม่มีข้อมูลหรือมีข้อมูลไม่ครบ</div>
+          <h3>Data completeness <span class="tag" id="ov-completeness-tag"></span></h3>
+          <div class="section-desc" style="margin-bottom:12px;">Check if this RVTools file has all required sheets/columns — ช่วยบอกว่าทำไมบางแท็บถึงไม่have dataหรือhave dataไม่ครบ</div>
           <div class="table-wrap"><table id="tbl-completeness"></table></div>
         </div>
 
         <div class="panel" style="margin-top:16px;">
-          <h3>ประเด็นที่ควรตรวจสอบ <span class="tag">Key findings</span></h3>
+          <h3>Key findings <span class="tag">Key findings</span></h3>
           <ul class="findings" id="ov-findings"></ul>
         </div>
 
         <div class="panel no-print">
-          <h3>สรุปภาพรวมสำหรับส่งอีเมล (Compute + Snapshot + Software Expire)</h3>
+          <h3>Email summary (Compute + Snapshot + Software Expire)</h3>
           <div id="ov-email-block"></div>
         </div>
 
         <div class="grid cols-2">
           <div class="panel">
-            <h3>สถานะเปิด/ปิดเครื่อง <span class="tag">Power state</span></h3>
+            <h3>Power state <span class="tag">Power state</span></h3>
             <div class="chart-box small"><canvas id="chart-power"></canvas></div>
           </div>
           <div class="panel">
-            <h3>ระบบปฏิบัติการยอดนิยม <span class="tag">Top 10 Guest OS</span></h3>
+            <h3>Top 10 Guest OS <span class="tag">Top 10 Guest OS</span></h3>
             <div class="chart-box small"><canvas id="chart-os"></canvas></div>
           </div>
         </div>
@@ -325,18 +481,18 @@
       <!-- COMPUTE -->
       <section class="section" id="sec-compute">
         <div class="section-title">Compute</div>
-        <div class="section-desc">การจัดสรร vCPU / vRAM เทียบกับทรัพยากรจริงของ Host</div>
+        <div class="section-desc">vCPU / vRAM allocation vs Host physical resources</div>
         <div class="grid cols-4" id="cp-stats"></div>
         <div class="panel">
-          <h3>สรุปตาม Cluster</h3>
+          <h3>Cluster summary</h3>
           <div class="table-wrap"><table id="tbl-cluster"></table></div>
         </div>
 
         <div class="panel">
-          <h3>รายละเอียดตาม Cluster <span class="tag" id="cp-cluster-detail-tag"></span></h3>
+          <h3>Cluster details <span class="tag" id="cp-cluster-detail-tag"></span></h3>
           <div style="margin-bottom:16px;">
-            <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">เลือก Cluster</label>
-            <select id="cpClusterSelect" style="width:100%; max-width:340px; background:#151C24; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;"></select>
+            <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Select Cluster</label>
+            <select id="cpClusterSelect" style="width:100%; max-width:340px; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;"></select>
           </div>
           <div class="grid cols-2">
             <div>
@@ -348,13 +504,13 @@
               <div class="chart-box small"><canvas id="chart-cp-cluster-mem"></canvas></div>
             </div>
           </div>
-          <h3 style="margin-top:20px; font-size:12px;">Host ใน Cluster นี้</h3>
+          <h3 style="margin-top:20px; font-size:12px;">Hosts in this Cluster</h3>
           <div class="table-wrap"><table id="tbl-host"></table></div>
         </div>
 
         <div class="panel">
           <h3>Memory Tiering — Active : Standby Ratio <span class="tag" id="cp-tiering-tag"></span></h3>
-          <div class="section-desc" style="margin-bottom:14px;">ประเมินสัดส่วนหน่วยความจำที่ใช้งานจริง (Active) เทียบกับที่ค้าง/เย็น (Standby) แยกตาม Cluster เพื่อดูศักยภาพในการทำ Memory Tiering (เช่น VMware Memory Tiering บน NVMe ตั้งแต่ vSphere 8.0 U3) — คิดเฉพาะ VM ที่เปิดเครื่องอยู่ (Powered On) เท่านั้น</div>
+          <div class="section-desc" style="margin-bottom:14px;">Evaluate Active vs Standby memory ratio per cluster to assess Memory Tiering potential (e.g., VMware Memory Tiering on NVMe since vSphere 8.0 U3) — Powered On VMs only</div>
           <div id="cp-tiering-body"></div>
         </div>
       </section>
@@ -362,10 +518,10 @@
       <!-- STORAGE -->
       <section class="section" id="sec-storage">
         <div class="section-title">Storage</div>
-        <div class="section-desc">การใช้งาน Datastore และพื้นที่คงเหลือ</div>
+        <div class="section-desc">Datastore usage and free space</div>
         <div class="grid cols-4" id="st-stats"></div>
         <div class="panel">
-          <h3>Datastore <span class="tag">เรียงตามพื้นที่ว่างน้อยสุด</span></h3>
+          <h3>Datastore <span class="tag">Sorted by least free space</span></h3>
           <div class="table-wrap"><table id="tbl-datastore"></table></div>
         </div>
       </section>
@@ -373,10 +529,10 @@
       <!-- VMs -->
       <section class="section" id="sec-vms">
         <div class="section-title">Virtual Machines</div>
-        <div class="section-desc">รายชื่อ VM ที่ใช้ทรัพยากรสูงสุดและรายการทั้งหมด</div>
+        <div class="section-desc">Top resource-consuming VMs and full list</div>
         <div class="grid cols-3">
           <div class="panel">
-            <h3>Top 10 vCPU <span class="tag">RVTools ไม่มี CPU usage ระดับ VM</span></h3>
+            <h3>Top 10 vCPU <span class="tag">RVTools has no per-VM CPU usage</span></h3>
             <div class="table-wrap"><table id="tbl-top-cpu"></table></div>
           </div>
           <div class="panel">
@@ -389,7 +545,7 @@
           </div>
         </div>
         <div class="panel">
-          <h3>รายการ VM ทั้งหมด <span class="tag" id="vm-count-tag"></span></h3>
+          <h3>All VMs <span class="tag" id="vm-count-tag"></span></h3>
           <div class="table-wrap"><table id="tbl-allvms"></table></div>
         </div>
       </section>
@@ -397,7 +553,7 @@
       <!-- SNAPSHOTS -->
       <section class="section" id="sec-snapshots">
         <div class="section-title">Snapshots</div>
-        <div class="section-desc">Snapshot ที่ค้างอยู่ในระบบและความเสี่ยงจากอายุการเก็บ</div>
+        <div class="section-desc">Snapshot stuck in the system and risks from retention age</div>
         <div class="grid cols-4" id="sn-stats"></div>
         <div class="panel">
           <h3>รายการ Snapshot</h3>
@@ -425,7 +581,7 @@
       <!-- SOFTWARE EXPIRE -->
       <section class="section" id="sec-expire">
         <div class="section-title">Software Expire (End of Support)</div>
-        <div class="section-desc">วันสิ้นสุดการซัพพอร์ตของ ESXi, vCenter และระบบปฏิบัติการบน VM ทั้งหมด — อ้างอิงฐานข้อมูลวงจรอายุผลิตภัณฑ์ ณ กันยายน 2569</div>
+        <div class="section-desc">วันสิ้นสุดการซัพพอร์ตของ ESXi, vCenter และระบบปฏิบัติการบน VM ทั้งหมด — Referenced from product lifecycle databases ณ กันยายน 2569</div>
         <div class="grid cols-4" id="ex-stats"></div>
 
         <div class="panel">
@@ -445,8 +601,8 @@
 
         <div class="panel no-print" style="border-left:2px solid var(--warn);">
           <div style="color:var(--muted); font-size:11.5px; line-height:1.6;">
-            ⚠ วันที่ End of Support อ้างอิงจากฐานข้อมูลวงจรอายุผลิตภัณฑ์สาธารณะ (endoflife.date / Broadcom / Microsoft / Red&nbsp;Hat / Canonical) ที่ปรับปรุงล่าสุดเมื่อกันยายน 2569
-            ผู้ผลิตอาจเปลี่ยนแปลงวันที่ได้ โปรดตรวจสอบกับแหล่งข้อมูลทางการอีกครั้งก่อนใช้ประกอบการตัดสินใจด้านความเสี่ยงหรืองบประมาณ
+            ⚠ วันที่ End of Support Referenced from public product lifecycle databases (endoflife.date / Broadcom / Microsoft / Red&nbsp;Hat / Canonical) ที่ปรับปรุงล่าสุดเมื่อกันยายน 2569
+            Manufacturers may change dates โปรดตรวจสอบกับแหล่งข้อมูลทางการอีกครั้งก่อนใช้ประกอบการตัดสินใจด้านความเสี่ยงหรืองบประมาณ
           </div>
         </div>
       </section>
@@ -460,11 +616,11 @@
           <h3>ปรับพารามิเตอร์การจำลอง</h3>
           <div style="margin-bottom:16px;">
             <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Cluster ที่ต้องการจำลอง</label>
-            <select id="simClusterSelect" style="width:100%; max-width:340px; background:#151C24; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;"></select>
+            <select id="simClusterSelect" style="width:100%; max-width:340px; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;"></select>
             <div style="font-size:10.5px; color:var(--muted); margin-top:4px;">CPU/Memory จะคำนวณเฉพาะ host และ VM ในคลัสเตอร์ที่เลือก — ส่วน Storage แสดงรวมทุก datastore เสมอ เนื่องจาก RVTools ไม่ระบุความสัมพันธ์ datastore ↔ cluster ไว้ชัดเจน</div>
           </div>
           <div id="simHostChecklistWrap" style="margin-bottom:16px; display:none;">
-            <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:6px;">เลือก Host ที่จะรวมในการคำนวณของคลัสเตอร์นี้ (ติ๊กออกเพื่อจำลองย้าย/ถอด host ออก, ติ๊กเพิ่ม host จากคลัสเตอร์อื่นเพื่อจำลองย้ายเข้า)</label>
+            <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:6px;">เลือก Host to be included in the calculation of this cluster (ติ๊กออกเพื่อจำลองย้าย/ถอด host ออก, ติ๊กเพิ่ม host from other clusters to simulate moving in)</label>
             <div id="simHostChecklist" style="max-height:180px; overflow:auto; border:1px solid var(--border); padding:8px; font-size:11.5px;"></div>
           </div>
           <div class="grid cols-2">
@@ -479,17 +635,17 @@
                 <button id="simHostPlus" style="width:34px; padding:8px 0;">+</button>
               </div>
               <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Cores ต่อ host ใหม่ (ค่าเฉลี่ยปัจจุบัน)</label>
-              <input id="simCoresPerHost" type="number" min="1" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:8px;">
+              <input id="simCoresPerHost" type="number" min="1" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:8px;">
               <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">RAM ต่อ host ใหม่ (GB)</label>
-              <input id="simRamPerHost" type="number" min="1" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:8px;">
+              <input id="simRamPerHost" type="number" min="1" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:8px;">
               <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">CPU Ratio (vCPU : pCPU) — อัตราส่วนที่ยอมรับได้ต่อ physical core</label>
-              <input id="simCpuRatio" type="number" min="0.1" step="0.5" value="4" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px;">
+              <input id="simCpuRatio" type="number" min="0.1" step="0.5" value="4" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px;">
               <div style="font-size:10.5px; color:var(--muted); margin-top:4px;">ใช้คำนวณ Effective CPU Capacity = Physical Cores × Ratio นี้ (ค่าทั่วไปในงาน production ประมาณ 3:1–6:1)</div>
             </div>
             <div>
               <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">Storage</div>
-              <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">เพิ่ม/ลด Storage Capacity รวม (TB) — ใส่ค่าติดลบเพื่อจำลองการลดพื้นที่</label>
-              <input id="simStorageDeltaTB" type="number" step="0.1" value="0" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:12px;">
+              <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">เพิ่ม/ลด Storage Total Capacity (TB) — Enter negative values to simulate storage reduction</label>
+              <input id="simStorageDeltaTB" type="number" step="0.1" value="0" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:12px;">
               <button id="simReset" style="width:100%;">รีเซ็ตกลับค่าปัจจุบัน</button>
             </div>
           </div>
@@ -523,7 +679,7 @@
               <div class="chart-box small"><canvas id="chart-sim-n1-mem"></canvas></div>
             </div>
           </div>
-          <div style="font-size:10.5px; color:var(--muted); margin-top:10px;">จำลองการนำ host ที่มี core มากที่สุดออกจากคลัสเตอร์ที่เลือก (สถานการณ์เลวร้ายที่สุดตามแนวทาง vSphere HA admission control) แล้วคำนวณ utilization ของ host ที่เหลือ โดยยังคง host ที่เพิ่ม/ลดและ CPU Ratio จากด้านบนไว้</div>
+          <div style="font-size:10.5px; color:var(--muted); margin-top:10px;">จำลองการนำ host ที่มี core most out of the selected cluster (Worst case scenario according to guidelines vSphere HA admission control) แล้วคำนวณ utilization ของ host ที่เหลือ โดยยังคง host ที่เพิ่ม/ลดและ CPU Ratio จากด้านบนไว้</div>
         </div>
 
         <div class="panel">
@@ -546,11 +702,11 @@
           <div class="panel">
             <h3>ความต้องการ Workload (Requirement)</h3>
             <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">vCPU ที่ต้องการ</label>
-            <input id="szReqVcpu" type="number" min="0" value="32" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:10px;">
+            <input id="szReqVcpu" type="number" min="0" value="32" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:10px;">
             <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">vMemory ที่ต้องการ (GB)</label>
-            <input id="szReqMem" type="number" min="0" value="128" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:10px;">
+            <input id="szReqMem" type="number" min="0" value="128" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:10px;">
             <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">vDisk ที่ต้องการ (GB)</label>
-            <input id="szReqDisk" type="number" min="0" value="2000" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px;">
+            <input id="szReqDisk" type="number" min="0" value="2000" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px;">
           </div>
           <div class="panel">
             <h3>ฝั่ง Server ที่จะจัดหา</h3>
@@ -563,13 +719,13 @@
               <button id="szServerPlus" style="width:34px; padding:8px 0;">+</button>
             </div>
             <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">CPU Core ต่อเครื่อง</label>
-            <input id="szCoresPerServer" type="number" min="1" value="32" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:10px;">
+            <input id="szCoresPerServer" type="number" min="1" value="32" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:10px;">
             <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Memory ต่อเครื่อง (GB)</label>
-            <input id="szRamPerServer" type="number" min="1" value="256" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:10px;">
+            <input id="szRamPerServer" type="number" min="1" value="256" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:10px;">
             <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Storage รวมที่จัดหา (GB)</label>
-            <input id="szStorageTotal" type="number" min="0" value="6000" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:10px;">
+            <input id="szStorageTotal" type="number" min="0" value="6000" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px; margin-bottom:10px;">
             <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">CPU Ratio (vCPU : pCPU)</label>
-            <input id="szCpuRatio" type="number" min="0.1" step="0.5" value="4" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px;">
+            <input id="szCpuRatio" type="number" min="0.1" step="0.5" value="4" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:7px; font-family:var(--mono); font-size:12px;">
           </div>
         </div>
 
@@ -617,7 +773,7 @@
       <!-- UPGRADE PLAN -->
       <section class="section" id="sec-upgrade">
         <div class="section-title">Upgrade Plan</div>
-        <div class="section-desc">ตรวจสอบเวอร์ชัน/build ปัจจุบันของ ESXi และ vCenter จากไฟล์ RVTools เลือกเวอร์ชันปลายทาง แล้วสร้าง action plan พร้อมตรวจสอบความเข้ากันได้ของฮาร์ดแวร์เบื้องต้น</div>
+        <div class="section-desc">ตรวจสอบเวอร์ชัน/build ปัจจุบันของ ESXi และ vCenter จากไฟล์ RVTools เลือกเวอร์ชันปลายทาง แล้วสร้าง action plan Ready to check basic hardware compatibility</div>
 
         <div class="panel">
           <h3>เวอร์ชันปัจจุบัน &amp; เลือกเวอร์ชันปลายทาง</h3>
@@ -625,11 +781,11 @@
           <div class="grid cols-2" style="margin-top:14px;">
             <div>
               <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">ESXi เวอร์ชันปลายทาง</label>
-              <select id="upgEsxiTarget" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;"></select>
+              <select id="upgEsxiTarget" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;"></select>
             </div>
             <div>
               <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">vCenter เวอร์ชันปลายทาง</label>
-              <select id="upgVcenterTarget" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;"></select>
+              <select id="upgVcenterTarget" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;"></select>
             </div>
           </div>
         </div>
@@ -637,13 +793,13 @@
         <div class="panel">
           <h3>ตรวจสอบ Hardware Compatibility เบื้องต้น <span class="tag" id="upg-hw-tag"></span></h3>
           <div class="table-wrap"><table id="tbl-upg-hw"></table></div>
-          <div style="font-size:10.5px; color:var(--muted); margin-top:8px;">⚠ เป็นการตรวจสอบเบื้องต้นจากชื่อรุ่น CPU เท่านั้น ไม่ใช่ข้อมูลอย่างเป็นทางการ — ก่อนอัปเกรดจริงต้องตรวจสอบกับ <a href="https://www.vmware.com/resources/compatibility/search.php" target="_blank" rel="noopener">VMware Compatibility Guide (VCG)</a> โดยใช้รุ่นเครื่อง/CPU ที่แน่นอนอีกครั้ง</div>
+          <div style="font-size:10.5px; color:var(--muted); margin-top:8px;">⚠ is a preliminary check from the model name CPU เท่านั้น ไม่ใช่ข้อมูลอย่างเป็นทางการ — ก่อนอัปเกรดจริงต้องตรวจสอบกับ <a href="https://www.vmware.com/resources/compatibility/search.php" target="_blank" rel="noopener">VMware Compatibility Guide (VCG)</a> โดยใช้รุ่นเครื่อง/CPU ที่แน่นอนอีกครั้ง</div>
         </div>
 
         <div class="panel">
           <h3>Action Plan <span class="tag" id="upg-plan-tag"></span></h3>
           <div class="table-wrap"><table id="tbl-upg-plan"></table></div>
-          <div style="font-size:10.5px; color:var(--muted); margin-top:8px;">ประมาณการเวลาเป็นแนวทางเบื้องต้นสำหรับวางแผน Change Management เท่านั้น ระยะเวลาจริงขึ้นกับสภาพแวดล้อม ขนาด workload และ maintenance window ที่มี</div>
+          <div style="font-size:10.5px; color:var(--muted); margin-top:8px;">Time estimates are preliminary guidelines for planning Change Management เท่านั้น Actual duration depends on the environment ขนาด workload และ maintenance window ที่มี</div>
         </div>
       </section>
 
@@ -656,12 +812,12 @@
           <div class="grid cols-2">
             <div>
               <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">เลือก Host</label>
-              <select id="diagHostSelect" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;"></select>
+              <select id="diagHostSelect" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;"></select>
             </div>
             <div style="display:flex; align-items:flex-end; gap:16px; font-size:11px; color:var(--muted);">
               <div><span style="display:inline-block; width:22px; height:2px; background:#5AA9E6; vertical-align:middle;"></span> NIC → Switch (Uplink)</div>
-              <div><span style="display:inline-block; width:22px; height:2px; background:#3ED2A0; vertical-align:middle;"></span> Active (ถ้ามีข้อมูล)</div>
-              <div><span style="display:inline-block; width:22px; height:2px; background:#F0A857; vertical-align:middle; border-top:2px dashed #F0A857;"></span> Standby (ถ้ามีข้อมูล)</div>
+              <div><span style="display:inline-block; width:22px; height:2px; background:#3ED2A0; vertical-align:middle;"></span> Active (ถ้าhave data)</div>
+              <div><span style="display:inline-block; width:22px; height:2px; background:#F0A857; vertical-align:middle; border-top:2px dashed #F0A857;"></span> Standby (ถ้าhave data)</div>
             </div>
           </div>
         </div>
@@ -694,7 +850,7 @@
 
       <!-- MFEC TEMPLATE REPORT -->
       <section class="section" id="sec-template">
-        <div class="section-title">MFEC Template Report</div>
+        <div class="section-title">MFEC Report</div>
         <div class="section-desc">จัดรูปแบบข้อมูลตามโครงเทมเพลต Preventive Maintenance Report (ส่วน vCenter/VMware) — ใช้ปุ่ม "Export Report" เพื่อพิมพ์/บันทึกเป็น PDF ในรูปแบบนี้</div>
 
         <div class="panel no-print">
@@ -702,15 +858,15 @@
           <div class="grid cols-3">
             <div>
               <div class="lbl" style="color:var(--muted); font-size:11px; margin-bottom:4px;">ชื่อลูกค้า / Customer</div>
-              <input id="inp-customer" type="text" placeholder="เช่น Krungthai Asset Management" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;">
+              <input id="inp-customer" type="text" placeholder="เช่น Krungthai Asset Management" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;">
             </div>
             <div>
               <div class="lbl" style="color:var(--muted); font-size:11px; margin-bottom:4px;">วันที่ตรวจ / PM Date</div>
-              <input id="inp-pmdate" type="text" placeholder="เช่น 18 Nov 2025" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;">
+              <input id="inp-pmdate" type="text" placeholder="เช่น 18 Nov 2025" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;">
             </div>
             <div>
               <div class="lbl" style="color:var(--muted); font-size:11px; margin-bottom:4px;">ผู้จัดทำ / Prepared by</div>
-              <input id="inp-preparedby" type="text" placeholder="ชื่อผู้จัดทำรายงาน" style="width:100%; background:#151C24; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;">
+              <input id="inp-preparedby" type="text" placeholder="ชื่อผู้จัดทำรายงาน" style="width:100%; background:#F2F4F7; border:1px solid var(--border); color:var(--text); padding:8px; font-family:var(--mono); font-size:12px;">
             </div>
           </div>
           <div style="margin-top:14px;">
@@ -733,7 +889,7 @@
       <!-- SECURITY AWARENESS -->
       <section class="section" id="sec-security">
         <div class="section-title">Security Awareness</div>
-        <div class="section-desc">เทียบเวอร์ชัน/build ของ ESXi และ vCenter ที่ตรวจพบกับฐานข้อมูล VMware Security Advisory (VMSA) พร้อมระดับความรุนแรงและวิธีแก้ไข</div>
+        <div class="section-desc">เทียบเวอร์ชัน/build ของ ESXi และ vCenter ที่ตรวจพบกับฐานข้อมูล VMware Security Advisory (VMSA) with severity levels and remediation methods</div>
         <div class="grid cols-4" id="sec-stats"></div>
 
         <div class="panel">
@@ -750,9 +906,9 @@
 
         <div class="panel no-print" style="border-left:2px solid var(--warn);">
           <div style="color:var(--muted); font-size:11.5px; line-height:1.6;">
-            ⚠ ฐานข้อมูล VMSA หลักในเครื่องมือนี้เป็นรายการที่คัดเลือกเฉพาะ Critical/Important ที่สำคัญ (ปรับปรุงล่าสุด ก.ย. 2569) <b>ไม่ใช่รายการที่ครบถ้วน 100%</b>
+            ⚠ ฐานข้อมูล VMSA The criteria in this tool are a curated list Critical/Important ที่สำคัญ (ปรับปรุงล่าสุด ก.ย. 2569) <b>ไม่ใช่รายการที่ครบถ้วน 100%</b>
             การจับคู่ระดับ host ใช้เวอร์ชันหลัก (major.minor) เสมอ และจะเทียบ <b>เลข build จริง</b> เพิ่มเติมเฉพาะ VMSA ที่เครื่องมือมีเลข build อ้างอิงยืนยันแล้วเท่านั้น (จะระบุไว้ในแต่ละรายการ) — ส่วนที่เหลือต้องเทียบ build เองกับ Response Matrix
-            ส่วน "ตรวจสอบ CVE/VMSA ล่าสุดจาก NVD" ด้านบนจะดึงข้อมูลจาก National Vulnerability Database แบบสดตอนนำเข้าไฟล์ เพื่อช่วยแจ้งเตือน CVE ใหม่ที่อาจยังไม่ถูกเพิ่มในฐานข้อมูลหลักของเครื่องมือนี้ (อาจใช้ไม่ได้หากเบราว์เซอร์/เครือข่ายบล็อกการเชื่อมต่อออกนอก)
+            ส่วน "ตรวจสอบ CVE/VMSA ล่าสุดจาก NVD" ด้านบนจะดึงข้อมูลจาก National Vulnerability Database แบบสดตอนนำเข้าไฟล์ เพื่อช่วยแจ้งเตือน CVE new ones that may not yet be in the main database of this tool (อาจใช้ไม่ได้หากเบราว์เซอร์/Network blocks outgoing connections)
             โปรดตรวจสอบ Response Matrix ของแต่ละ VMSA บน <a href="https://support.broadcom.com/web/ecx/support-content-notification" target="_blank" rel="noopener">Broadcom Support Portal</a> เพื่อความถูกต้องก่อนตัดสินใจ
           </div>
         </div>
@@ -779,7 +935,7 @@
     {id:'sizing',    label:'New Sizing'},
     {id:'upgrade',   label:'Upgrade Plan'},
     {id:'diagram',   label:'Diagram'},
-    {id:'template',  label:'MFEC Template Report'}
+    {id:'template',  label:'MFEC Report'}
   ];
   var navEl = document.getElementById('nav');
   var loaded = false;
@@ -1093,7 +1249,7 @@
       affects:{vcenter:['7.0','8.0'], esxi:[]},
       fixed:'vCenter 8.0U3b / 7.0U3s หรือใหม่กว่า (แพตช์ครั้งแรก ก.ย. 2567 ไม่สมบูรณ์ ต้องอัปเดตซ้ำตาม VMSA-2024-0019 revision ล่าสุด)',
       itw:false,
-      remediation:'ตรวจสอบว่าอัปเดตเป็นเวอร์ชันล่าสุดของ VMSA-2024-0019 (ไม่ใช่แค่แพตช์แรกที่ไม่สมบูรณ์) และปิดการเข้าถึง vCenter จากเครือข่ายที่ไม่จำเป็น'
+      remediation:'Check if it is updated to the latest version of VMSA-2024-0019 (ไม่ใช่แค่แพตช์แรกที่ไม่สมบูรณ์) และปิดการเข้าถึง vCenter จากเครือข่ายที่ไม่จำเป็น'
     },
     {
       id:'VMSA-2024-0013', cves:['CVE-2024-37085','CVE-2024-37086','CVE-2024-37087'], cvss:6.8, sev:'important',
@@ -1101,7 +1257,7 @@
       affects:{vcenter:[], esxi:['7.0','8.0']},
       fixed:'ESXi 8.0 Update 3 / 7.0 Update 3 หรือใหม่กว่า',
       itw:true,
-      remediation:'แพตช์ ESXi; หากไม่ได้ใช้ AD integration ให้ลบการตั้งค่านี้ออก; ตรวจสอบกลุ่ม AD ชื่อ "ESX Admins" ว่าไม่ถูกสร้างใหม่โดยไม่ได้รับอนุญาต — เคยถูกใช้โดยกลุ่ม ransomware (Akira/Storm-0506) เพื่อยึดครอง ESXi ทั้งคลัสเตอร์'
+      remediation:'แพตช์ ESXi; หากไม่ได้ใช้ AD integration ให้ลบการตั้งค่านี้ออก; ตรวจสอบกลุ่ม AD ชื่อ "ESX Admins" that it is not recreated without authorization — เคยถูกใช้โดยกลุ่ม ransomware (Akira/Storm-0506) เพื่อยึดครอง ESXi ทั้งคลัสเตอร์'
     },
     {
       id:'VMSA-2024-0012', cves:['CVE-2024-37079','CVE-2024-37080','CVE-2024-37081'], cvss:9.8, sev:'critical',
@@ -1125,7 +1281,7 @@
       affects:{vcenter:['6.7','7.0','8.0'], esxi:[]},
       fixed:'vCenter 8.0U2 / 7.0U3o / 6.7U3u หรือใหม่กว่า',
       itw:true,
-      remediation:'แพตช์ทันที — มีรายงานว่าถูกกลุ่ม APT ใช้เจาะระบบมาตั้งแต่ปี 2021 ก่อนที่จะมีการเปิดเผยช่องโหว่นี้; ตรวจสอบ log และ indicators of compromise ย้อนหลังหากยังไม่เคยแพตช์'
+      remediation:'แพตช์ทันที — มีรายงานว่าถูกกลุ่ม APT ใช้เจาะระบบมาตั้งแต่ปี 2021 before this vulnerability was disclosed; ตรวจสอบ log และ indicators of compromise ย้อนหลังหากยังไม่เคยแพตช์'
     },
     {
       id:'VMSA-2021-0002', cves:['CVE-2021-21985','CVE-2021-21986'], cvss:9.8, sev:'critical',
@@ -1133,7 +1289,7 @@
       affects:{vcenter:['6.5','6.7','7.0'], esxi:[]},
       fixed:'vCenter 7.0U2b / 6.7U3n / 6.5U3p หรือใหม่กว่า',
       itw:true,
-      remediation:'แพตช์ vCenter — ช่องโหว่นี้ถูกสแกน/โจมตีอย่างแพร่หลายทั่วโลกหลังเปิดเผย; หากยังไม่ได้แพตช์ควรถือว่ามีความเสี่ยงสูงมาก'
+      remediation:'แพตช์ vCenter — ช่องโหว่นี้ถูกสแกน/widespread attacks worldwide after disclosure; If not yet patched, consider it at riskHighมาก'
     }
   ];
   function sevRank(s){ return s==='critical'?3:(s==='important'?2:1); }
@@ -1465,8 +1621,8 @@
     if(D.snapshots.length && !oldSnap.length) findings.push({sev:'ok', txt:'พบ snapshot ทั้งหมด '+D.snapshots.length+' รายการ ไม่มีรายการเก่าเกิน 30 วัน'});
     var toolsBad = D.toolsRows.filter(function(t){ var s=norm(t.status); return s.indexOf('notrunning')!==-1||s.indexOf('notinstalled')!==-1; });
     if(toolsBad.length) findings.push({sev:'warn', txt:'<b>'+toolsBad.length+' VM</b> ที่ VMware Tools ไม่ได้ติดตั้งหรือไม่ทำงาน'});
-    if(off > 0) findings.push({sev:'warn', txt:'<b>'+off+' VM</b> อยู่ในสถานะปิดเครื่อง — ตรวจสอบว่ายังจำเป็นต้องเก็บไว้หรือไม่ เพื่อคืนทรัพยากร'});
-    if(!findings.length) findings.push({sev:'ok', txt:'ไม่พบประเด็นผิดปกติที่เด่นชัดจากข้อมูลที่นำเข้า'});
+    if(off > 0) findings.push({sev:'warn', txt:'<b>'+off+' VM</b> อยู่ในสถานะปิดเครื่อง — Check if it is still necessary to keep เพื่อคืนทรัพยากร'});
+    if(!findings.length) findings.push({sev:'ok', txt:'No significant anomalies found from the imported data'});
     document.getElementById('ov-findings').innerHTML = findings.map(function(f){
       return '<li><span class="sev '+f.sev+'"></span><span class="txt">'+f.txt+'</span></li>';
     }).join('');
@@ -1475,8 +1631,8 @@
     killChart('power');
     CHARTS.power = new Chart(document.getElementById('chart-power'), {
       type:'doughnut',
-      data:{ labels:['เปิดเครื่อง','ปิดเครื่อง','Suspended'], datasets:[{data:[on,off,susp], backgroundColor:['#3ED2A0','#E2596B','#F0A857'], borderColor:'#1A222B', borderWidth:2}] },
-      options:{ plugins:{legend:{position:'bottom', labels:{color:'#8B96A3', font:{size:11}}}}, maintainAspectRatio:false }
+      data:{ labels:['เปิดเครื่อง','ปิดเครื่อง','Suspended'], datasets:[{data:[on,off,susp], backgroundColor:['#3ED2A0','#E2596B','#F0A857'], borderColor:'#FFFFFF', borderWidth:2}] },
+      options:{ plugins:{legend:{position:'bottom', labels:{color:'#667085', font:{size:11}}}}, maintainAspectRatio:false }
     });
 
     // OS distribution
@@ -1487,23 +1643,36 @@
     CHARTS.os = new Chart(document.getElementById('chart-os'), {
       type:'bar',
       data:{ labels: osSorted.map(function(o){return o.k.length>26?o.k.slice(0,26)+'…':o.k;}), datasets:[{data:osSorted.map(function(o){return o.v;}), backgroundColor:'#5AA9E6'}] },
-      options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{ticks:{color:'#8B96A3'}, grid:{color:'#232C36'}}, y:{ticks:{color:'#8B96A3', font:{size:10}}, grid:{display:false}}}, maintainAspectRatio:false }
+      options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{ticks:{color:'#667085'}, grid:{color:'#232C36'}}, y:{ticks:{color:'#667085', font:{size:10}}, grid:{display:false}}}, maintainAspectRatio:false }
     });
 
     // ---- overview email summary (Thai + English): Compute + Snapshot + Software Expire ----
-    var onVmsForEmail = D.realVms.filter(function(v){return v.power.indexOf('on')!==-1;});
-    var totalCoresE = D.hosts.reduce(function(a,h){return a+h.cores;},0);
-    var totalHostMemGBE = mibToGB(D.hosts.reduce(function(a,h){return a+h.memMiB;},0));
-    var totalVCPUE = onVmsForEmail.reduce(function(a,v){return a+v.cpus;},0);
-    var totalVRAMGBE = mibToGB(onVmsForEmail.reduce(function(a,v){return a+v.memMiB;},0));
-    var cpuRatioE = totalCoresE>0 ? (totalVCPUE/totalCoresE) : 0;
-    var ramRatioE = totalHostMemGBE>0 ? (totalVRAMGBE/totalHostMemGBE) : 0;
+    // CPU/RAM ratios use same method as Compute section
+    var ratioPerCoreValuesE = [];
+    var standbyActiveRatiosE = [];
+    Object.keys(D.clusterAgg).forEach(function(k){
+      var c = D.clusterAgg[k];
+      var cpuUtil = c.usageCount>0 ? (c.cpuUsageSum/c.usageCount) : 0;
+      if(cpuUtil>0 && c.cores>0){ ratioPerCoreValuesE.push((c.vcpu*100/cpuUtil)/c.cores); }
+      var tieringVms = D.realVms.filter(function(v){ return v.power.indexOf('on')!==-1 && (v.cluster||'-')===c.name && v.memActiveMiB!=null; });
+      if(tieringVms.length){
+        var totalAlloc = tieringVms.reduce(function(a,v){return a+v.memMiB;},0);
+        var totalActive = tieringVms.reduce(function(a,v){return a+Math.min(v.memActiveMiB, v.memMiB);},0);
+        var totalStandby = Math.max(0, totalAlloc - totalActive);
+        if(totalActive>0){ standbyActiveRatiosE.push(totalStandby/totalActive); }
+      }
+    });
+    var cpuRatioE = ratioPerCoreValuesE.length>0 ? ratioPerCoreValuesE.reduce(function(a,b){return a+b;},0)/ratioPerCoreValuesE.length : 0;
+    var ramRatioE = standbyActiveRatiosE.length>0 ? standbyActiveRatiosE.reduce(function(a,b){return a+b;},0)/standbyActiveRatiosE.length : 0;
 
     var clusterLinesTh = [], clusterLinesEn = [];
     Object.keys(D.clusterAgg).sort().forEach(function(cName){
       var c = D.clusterAgg[cName];
-      var cCpuPct = c.cores>0 ? (c.vcpu/c.cores*100) : 0;
-      var cMemPct = c.memMiB>0 ? (c.vramMiB/c.memMiB*100) : 0;
+      var hostsInC = D.hosts.filter(function(h){ return h.cluster===cName; });
+      var hostsWithCpu = hostsInC.filter(function(h){ return h.cpuUsagePct!=null; });
+      var hostsWithMem = hostsInC.filter(function(h){ return h.memUsagePct!=null; });
+      var cCpuPct = hostsWithCpu.length>0 ? hostsWithCpu.reduce(function(a,h){return a+h.cpuUsagePct;},0)/hostsWithCpu.length : 0;
+      var cMemPct = hostsWithMem.length>0 ? hostsWithMem.reduce(function(a,h){return a+h.memUsagePct;},0)/hostsWithMem.length : 0;
       clusterLinesTh.push('- '+cName+': CPU '+fmt(cCpuPct,1)+'%, Memory '+fmt(cMemPct,1)+'% ('+fmt(c.hosts)+' host, เฉพาะ VM ที่เปิดอยู่)');
       clusterLinesEn.push('- '+cName+': CPU '+fmt(cCpuPct,1)+'%, Memory '+fmt(cMemPct,1)+'% ('+fmt(c.hosts)+' host(s), powered-on VMs only)');
     });
@@ -1533,16 +1702,16 @@
 
     var ovEmailTh = 'เรื่อง: สรุปภาพรวมระบบ VMware Infrastructure\n\n'+
       'ภาพรวม Compute:\n'+
-      '- vCPU : pCore = '+fmt(cpuRatioE,2)+' : 1'+(cpuRatioE>4?' (สูงกว่าปกติ ควรตรวจสอบ)':'')+' (เฉพาะ VM ที่เปิดอยู่)\n'+
-      '- vRAM : pRAM = '+fmt(ramRatioE,2)+' : 1'+(ramRatioE>1.5?' (จัดสรรเกินทรัพยากรจริง)':'')+' (เฉพาะ VM ที่เปิดอยู่)\n'+
+      '- CPU ratio, vCPU : pCore = '+fmt(cpuRatioE,2)+' : 1'+(cpuRatioE>4?' (Highกว่าปกติ ควรตรวจสอบ)':'')+' (เฉพาะ VM ที่เปิดอยู่)\n'+
+      '- Memory Tiering, Standby Memory : Active Memory = '+fmt(ramRatioE,2)+' : 1'+(ramRatioE>1.5?' (Over-allocated)':'')+' (เฉพาะ VM ที่เปิดอยู่)\n'+
       clusterLinesTh.join('\n')+'\n\n'+
       'สถานะ Snapshot:\n- '+snapLineTh+'\n\n'+
       'สถานะ Software End of Support:\n'+expireLinesTh.join('\n')+'\n';
 
     var ovEmailEn = 'Subject: VMware Infrastructure Overview Summary\n\n'+
       'Compute Overview:\n'+
-      '- vCPU : pCore = '+fmt(cpuRatioE,2)+' : 1'+(cpuRatioE>4?' (higher than typical, review recommended)':'')+' (powered-on VMs only)\n'+
-      '- vRAM : pRAM = '+fmt(ramRatioE,2)+' : 1'+(ramRatioE>1.5?' (over-provisioned relative to physical capacity)':'')+' (powered-on VMs only)\n'+
+      '- CPU ratio, vCPU : pCore = '+fmt(cpuRatioE,2)+' : 1'+(cpuRatioE>4?' (higher than typical, review recommended)':'')+' (powered-on VMs only)\n'+
+      '- Memory Tiering, Standby Memory : Active Memory = '+fmt(ramRatioE,2)+' : 1'+(ramRatioE>1.5?' (over-provisioned relative to physical capacity)':'')+' (powered-on VMs only)\n'+
       clusterLinesEn.join('\n')+'\n\n'+
       'Snapshot Status:\n- '+snapLineEn+'\n\n'+
       'Software End-of-Support Status:\n'+expireLinesEn.join('\n')+'\n';
@@ -1574,9 +1743,10 @@
       document.getElementById('tbl-host').insertAdjacentHTML('afterend', '<div class="empty-note">หมายเหตุ: ไม่พบข้อมูล CPU/Memory Usage % ของ host ในไฟล์นี้ (ต้องเชื่อมต่อ vCenter แบบสดตอน export)</div>');
     }
 
-    // pie charts: CPU/Memory utilization for this cluster — powered-on VMs only (simBaseValues already filters), ratio 1:1
+    // pie charts: CPU = average host CPU usage in cluster; Memory = vRAM/pRAM allocation ratio
     var base = simBaseValues(D, cName, {});
-    var cpuPct = base.totalCores>0 ? (base.allocVCPU/base.totalCores*100) : (base.allocVCPU>0?999:0);
+    var hostsWithCpu = base.hostsIn.filter(function(h){ return h.cpuUsagePct!=null; });
+    var cpuPct = hostsWithCpu.length>0 ? hostsWithCpu.reduce(function(a,h){return a+h.cpuUsagePct;},0)/hostsWithCpu.length : 0;
     var memPct = base.totalRamGB>0 ? (base.allocVRamGB/base.totalRamGB*100) : (base.allocVRamGB>0?999:0);
     renderSimPie('chart-cp-cluster-cpu', cpuPct);
     renderSimPie('chart-cp-cluster-mem', memPct);
@@ -1591,18 +1761,40 @@
     var cpuRatio = totalCores>0 ? (totalVCPU/totalCores) : 0;
     var ramRatio = totalHostMemGB>0 ? (totalVRAMGB/totalHostMemGB) : 0;
 
+    // vCPU : pCore = average of (100% vCPU Usable / Physical Cores) across clusters
+    var ratioPerCoreValues = [];
+    var standbyActiveRatios = [];
+    Object.keys(D.clusterAgg).forEach(function(k){
+      var c = D.clusterAgg[k];
+      var cpuUtil = c.usageCount>0 ? (c.cpuUsageSum/c.usageCount) : 0;
+      if(cpuUtil>0 && c.cores>0){ ratioPerCoreValues.push((c.vcpu*100/cpuUtil)/c.cores); }
+      // Standby / Active ratio per cluster (powered-on VMs with memActiveMiB)
+      var tieringVms = D.realVms.filter(function(v){ return v.power.indexOf('on')!==-1 && (v.cluster||'-')===c.name && v.memActiveMiB!=null; });
+      if(tieringVms.length){
+        var totalAlloc = tieringVms.reduce(function(a,v){return a+v.memMiB;},0);
+        var totalActive = tieringVms.reduce(function(a,v){return a+Math.min(v.memActiveMiB, v.memMiB);},0);
+        var totalStandby = Math.max(0, totalAlloc - totalActive);
+        if(totalActive>0){ standbyActiveRatios.push(totalStandby/totalActive); }
+      }
+    });
+    var avgRatioPerCore = ratioPerCoreValues.length>0 ? ratioPerCoreValues.reduce(function(a,b){return a+b;},0)/ratioPerCoreValues.length : 0;
+    var avgStandbyActive = standbyActiveRatios.length>0 ? standbyActiveRatios.reduce(function(a,b){return a+b;},0)/standbyActiveRatios.length : 0;
+
     document.getElementById('cp-stats').innerHTML = [
       {lbl:'Physical Cores', val:fmt(totalCores), sub:D.hosts.length+' host'},
-      {lbl:'vCPU : pCore', val:fmt(cpuRatio,2)+' : 1', sub: (cpuRatio>4 ? 'อัตราส่วนสูง ควรตรวจสอบ' : 'อยู่ในเกณฑ์ปกติ')+' (เฉพาะ VM ที่เปิดอยู่)'},
-      {lbl:'Physical RAM', val:fmt(totalHostMemGB,0)+' GB', sub:'รวมทุก host'},
-      {lbl:'vRAM : pRAM', val:fmt(ramRatio,2)+' : 1', sub: (ramRatio>1.5 ? 'จัดสรรเกินทรัพยากรจริง' : 'อยู่ในเกณฑ์ปกติ')+' (เฉพาะ VM ที่เปิดอยู่)'}
+      {lbl:'CPU ratio, vCPU : pCore', val:fmt(avgRatioPerCore,2)+' : 1', sub: 'Avg (100% vCPU Usable / Physical Cores) across clusters (Powered On VMs)'},
+      {lbl:'Physical RAM', val:fmt(totalHostMemGB,0)+' GB', sub:'All hosts'},
+      {lbl:'Memory Tiering, Standby Memory : Active Memory', val:fmt(avgStandbyActive,2)+' : 1', sub: 'Avg Standby/Active memory ratio across clusters (Powered On VMs)'}
     ].map(function(s){ return '<div class="stat"><div class="lbl">'+s.lbl+'</div><div class="val">'+s.val+'</div><div class="sub">'+s.sub+'</div></div>'; }).join('');
 
     var clusters = Object.keys(D.clusterAgg).map(function(k){return D.clusterAgg[k];}).sort(function(a,b){return b.vms-a.vms;});
     document.getElementById('tbl-cluster').innerHTML =
-      '<thead><tr><th>Cluster</th><th class="num">Hosts</th><th class="num">VMs</th><th class="num">Physical Cores</th><th class="num">vCPU (เปิดอยู่)</th><th class="num">Physical RAM (GB)</th><th class="num">vRAM (เปิดอยู่, GB)</th></tr></thead><tbody>'+
+      '<thead><tr><th>Cluster</th><th class="num">Hosts</th><th class="num">VMs</th><th class="num">Physical Cores</th><th class="num">vCPU (Powered On)</th><th class="num">Physical RAM (GB)</th><th class="num">vRAM (Powered On, GB)</th><th class="num">100% vCPU Usable</th><th class="num">100% vCPU Usable / Physical Cores</th></tr></thead><tbody>'+
       clusters.map(function(c){
-        return '<tr><td>'+esc(c.name)+'</td><td class="num">'+fmt(c.hosts)+'</td><td class="num">'+fmt(c.vms)+'</td><td class="num">'+fmt(c.cores)+'</td><td class="num">'+fmt(c.vcpu)+'</td><td class="num">'+fmt(mibToGB(c.memMiB),0)+'</td><td class="num">'+fmt(mibToGB(c.vramMiB),0)+'</td></tr>';
+        var cpuUtil = c.usageCount>0 ? (c.cpuUsageSum/c.usageCount) : 0;
+        var ratioFactor = cpuUtil>0 ? (c.vcpu*100/cpuUtil) : 0;
+        var ratioPerCore = (cpuUtil>0 && c.cores>0) ? (ratioFactor/c.cores) : 0;
+        return '<tr><td>'+esc(c.name)+'</td><td class="num">'+fmt(c.hosts)+'</td><td class="num">'+fmt(c.vms)+'</td><td class="num">'+fmt(c.cores)+'</td><td class="num">'+fmt(c.vcpu)+'</td><td class="num">'+fmt(mibToGB(c.memMiB),0)+'</td><td class="num">'+fmt(mibToGB(c.vramMiB),0)+'</td><td class="num">'+(cpuUtil>0?fmt(ratioFactor,1):'-')+'</td><td class="num">'+(ratioPerCore>0?fmt(ratioPerCore,2):'-')+'</td></tr>';
       }).join('') + '</tbody>';
 
     var hasHostUsage = D.hosts.some(function(h){ return h.cpuUsagePct!=null || h.memUsagePct!=null; });
@@ -1624,7 +1816,7 @@
 
       if(!cpComputeState.wired){
         cpComputeState.wired = true;
-        sel.addEventListener('change', function(){ renderComputeClusterDetail(D); });
+        sel.addEventListener('change', function(){ renderComputeClusterDetail(D); renderMemoryTiering(D); });
       }
       cpComputeState.D = D;
       renderComputeClusterDetail(D);
@@ -1639,21 +1831,27 @@
       poweredOnVms.forEach(function(v){ var c = v.cluster||'-'; if(clusterNamesTiering.indexOf(c)===-1) clusterNamesTiering.push(c); });
       clusterNamesTiering.sort();
 
-      document.getElementById('cp-tiering-tag').textContent = tieringVmsAll.length+'/'+poweredOnVms.length+' VM (Powered On) มีข้อมูล';
+      document.getElementById('cp-tiering-tag').textContent = tieringVmsAll.length+'/'+poweredOnVms.length+' VM (Powered On) have data';
 
       var bodyHtml = '';
       if(!clusterNamesTiering.length){
-        bodyHtml = '<div class="empty-note">ไม่พบ VM ที่เปิดเครื่องอยู่ในไฟล์นี้</div>';
+        bodyHtml = '<div class="empty-note">No powered-on VMs found</div>';
       }
-      clusterNamesTiering.forEach(function(cName){
-        var tieringVms = tieringVmsAll.filter(function(v){ return (v.cluster||'-')===cName; });
-        var clusterVmCount = poweredOnVms.filter(function(v){ return (v.cluster||'-')===cName; }).length;
 
-        bodyHtml += '<div style="margin-top:18px;"><b style="font-size:12.5px;">Cluster: '+esc(cName)+'</b> <span class="tag">'+tieringVms.length+'/'+clusterVmCount+' VM (Powered On) มีข้อมูล</span></div>';
+      function renderTieringForCluster(cName){
+        var tieringVms = tieringVmsAll.filter(function(v){ return cName==='ALL' || (v.cluster||'-')===cName; });
+        var clusterVmCount = poweredOnVms.filter(function(v){ return cName==='ALL' || (v.cluster||'-')===cName; }).length;
+
+        var clusterHtml = '';
+        if(cName!=='ALL'){
+          clusterHtml += '<div style="margin-top:18px;"><b style="font-size:12.5px;">Cluster: '+esc(cName)+'</b> <span class="tag">'+tieringVms.length+'/'+clusterVmCount+' VM (Powered On) have data</span></div>';
+        } else {
+          clusterHtml += '<div style="margin-top:18px;"><b style="font-size:12.5px;">All Clusters</b> <span class="tag">'+tieringVms.length+'/'+clusterVmCount+' VM (Powered On) have data</span></div>';
+        }
 
         if(!tieringVms.length){
-          bodyHtml += '<div class="empty-note">ไม่มี VM ที่เปิดเครื่องอยู่ในคลัสเตอร์นี้ที่มีข้อมูล Memory Active</div>';
-          return;
+          clusterHtml += '<div class="empty-note">No powered-on VMs with Memory Active data in this cluster</div>';
+          return clusterHtml;
         }
 
         var totalAllocMiB = tieringVms.reduce(function(a,v){return a+v.memMiB;},0);
@@ -1663,11 +1861,11 @@
         var standbyPct = totalAllocMiB>0 ? (totalStandbyMiB/totalAllocMiB*100) : 0;
         var ratio = totalActiveMiB>0 ? (totalStandbyMiB/totalActiveMiB) : (totalStandbyMiB>0?999:0);
 
-        bodyHtml += '<div class="grid cols-4" style="margin-top:8px;">'+[
-          {lbl:'Active Memory (ใช้งานจริง)', val:fmt(mibToGB(totalActiveMiB),0)+' GB', sub:fmt(activePct,1)+'% ของที่จัดสรร'},
-          {lbl:'Standby Memory (เย็น/ค้าง)', val:fmt(mibToGB(totalStandbyMiB),0)+' GB', sub:fmt(standbyPct,1)+'% ของที่จัดสรร', cls:standbyPct>=50?'warn':''},
-          {lbl:'Active : Standby Ratio', val:'1 : '+fmt(ratio,2), sub: ratio>1 ? 'Standby มากกว่า Active — ศักยภาพ tiering สูง' : 'Active มากกว่า Standby'},
-          {lbl:'ศักยภาพ Memory Tiering', val: standbyPct>=50?'สูง':(standbyPct>=25?'ปานกลาง':'ต่ำ'), sub:'ประเมินจากสัดส่วน Standby รวม', cls: standbyPct>=50?'ok':(standbyPct>=25?'warn':'')}
+        clusterHtml += '<div class="grid cols-4" style="margin-top:8px;">'+[
+          {lbl:'Active Memory (In Use)', val:fmt(mibToGB(totalActiveMiB),0)+' GB', sub:fmt(activePct,1)+'% of allocated'},
+          {lbl:'Standby Memory (Cold/Idle)', val:fmt(mibToGB(totalStandbyMiB),0)+' GB', sub:fmt(standbyPct,1)+'% of allocated', cls:standbyPct>=50?'warn':''},
+          {lbl:'Active : Standby Ratio', val:'1 : '+fmt(ratio,2), sub: ratio>1 ? 'Standby > Active — High tiering potential' : 'Active > Standby'},
+          {lbl:'Memory Tiering Potential', val: standbyPct>=50?'High':(standbyPct>=25?'Medium':'Low'), sub:'Based on total Standby ratio', cls: standbyPct>=50?'ok':(standbyPct>=25?'warn':'')}
         ].map(function(s){ return '<div class="stat '+(s.cls||'')+'"><div class="lbl">'+s.lbl+'</div><div class="val">'+s.val+'</div><div class="sub">'+s.sub+'</div></div>'; }).join('')+'</div>';
 
         var tieringRows = tieringVms.map(function(v){
@@ -1677,20 +1875,85 @@
           return {name:v.name, allocGB:mibToGB(v.memMiB), activeGB:mibToGB(active), standbyGB:mibToGB(standby), standbyPct:standbyPctVm};
         }).sort(function(a,b){ return b.standbyGB - a.standbyGB; }).slice(0,10);
 
-        bodyHtml += '<div style="font-size:10.5px; color:var(--muted); margin:10px 0 6px 0;">Top 10 อันดับแรกที่มี Standby Memory สูงสุดในคลัสเตอร์นี้ (ตัวเลือกที่ดีที่สุดสำหรับ tiering)</div>';
-        bodyHtml += '<div class="table-wrap"><table>'+
+        clusterHtml += '<div style="font-size:10.5px; color:var(--muted); margin:10px 0 6px 0;">Top 10 VMs with highest Standby Memory (best tiering candidates)</div>';
+        clusterHtml += '<div class="table-wrap"><table>'+
           '<thead><tr><th>VM</th><th class="num">Allocated (GB)</th><th class="num">Active (GB)</th><th class="num">Standby (GB)</th><th>Standby %</th></tr></thead><tbody>'+
           tieringRows.map(function(r){
             return '<tr><td>'+esc(r.name)+'</td><td class="num">'+fmt(r.allocGB,1)+'</td><td class="num">'+fmt(r.activeGB,1)+'</td><td class="num">'+fmt(r.standbyGB,1)+'</td>'+
-              '<td><div class="bar-track"><div class="bar-fill" style="width:'+Math.min(r.standbyPct,100)+'%; background:'+(r.standbyPct>=50?'#3ED2A0':'#5AA9E6')+';"></div></div><span class="pill" style="margin-top:4px; display:inline-block;">'+fmt(r.standbyPct,1)+'%</span></td></tr>';
+              '<td><div class="bar-track"><div class="bar-fill" style="width:'+Math.min(r.standbyPct,100)+'%; background:'+(r.standbyPct>=50?'#3ED2A0':'#5AA9E6')+'"></div></div><span class="pill" style="margin-top:4px; display:inline-block;">'+fmt(r.standbyPct,1)+'%</span></td></tr>';
           }).join('') + '</tbody></table></div>';
-      });
+        return clusterHtml;
+      }
+
+      // Use cpClusterSelect value as the filter
+      var currentCluster = document.getElementById('cpClusterSelect').value || 'ALL';
+      bodyHtml += renderTieringForCluster(currentCluster);
 
       document.getElementById('cp-tiering-body').innerHTML = bodyHtml;
     }else{
       document.getElementById('cp-tiering-tag').textContent = '';
-      document.getElementById('cp-tiering-body').innerHTML = '<div class="empty-note">ไม่พบข้อมูล Memory Active (ชีต vMemory คอลัมน์ "Active") ในไฟล์นี้ — ไม่สามารถประเมิน Memory Tiering ได้</div>';
+      document.getElementById('cp-tiering-body').innerHTML = '<div class="empty-note">No Memory Active data found (vMemory sheet, "Active" column) — cannot evaluate Memory Tiering</div>';
     }
+  }
+
+
+  function renderMemoryTiering(D){
+    if(!D.hasMemUsageData){
+      document.getElementById('cp-tiering-tag').textContent = '';
+      document.getElementById('cp-tiering-body').innerHTML = '<div class="empty-note">No Memory Active data found (vMemory sheet, "Active" column) — cannot evaluate Memory Tiering</div>';
+      return;
+    }
+    var poweredOnVms = D.realVms.filter(function(v){ return v.power.indexOf('on')!==-1; });
+    var tieringVmsAll = poweredOnVms.filter(function(v){ return v.memActiveMiB != null; });
+    var clusterNamesTiering = [];
+    poweredOnVms.forEach(function(v){ var c = v.cluster||'-'; if(clusterNamesTiering.indexOf(c)===-1) clusterNamesTiering.push(c); });
+    clusterNamesTiering.sort();
+    document.getElementById('cp-tiering-tag').textContent = tieringVmsAll.length+'/'+poweredOnVms.length+' VM (Powered On) have data';
+    var bodyHtml = '';
+    if(!clusterNamesTiering.length){
+      bodyHtml = '<div class="empty-note">No powered-on VMs found</div>';
+    }
+    var currentCluster = document.getElementById('cpClusterSelect').value || 'ALL';
+    // Inline renderTieringForCluster logic
+    var tieringVms = tieringVmsAll.filter(function(v){ return currentCluster==='ALL' || (v.cluster||'-')===currentCluster; });
+    var clusterVmCount = poweredOnVms.filter(function(v){ return currentCluster==='ALL' || (v.cluster||'-')===currentCluster; }).length;
+    var clusterHtml = '';
+    if(currentCluster!=='ALL'){
+      clusterHtml += '<div style="margin-top:18px;"><b style="font-size:12.5px;">Cluster: '+esc(currentCluster)+'</b> <span class="tag">'+tieringVms.length+'/'+clusterVmCount+' VM (Powered On) have data</span></div>';
+    } else {
+      clusterHtml += '<div style="margin-top:18px;"><b style="font-size:12.5px;">All Clusters</b> <span class="tag">'+tieringVms.length+'/'+clusterVmCount+' VM (Powered On) have data</span></div>';
+    }
+    if(!tieringVms.length){
+      clusterHtml += '<div class="empty-note">No powered-on VMs with Memory Active data in this cluster</div>';
+      document.getElementById('cp-tiering-body').innerHTML = clusterHtml;
+      return;
+    }
+    var totalAllocMiB = tieringVms.reduce(function(a,v){return a+v.memMiB;},0);
+    var totalActiveMiB = tieringVms.reduce(function(a,v){return a+Math.min(v.memActiveMiB, v.memMiB);},0);
+    var totalStandbyMiB = Math.max(0, totalAllocMiB - totalActiveMiB);
+    var activePct = totalAllocMiB>0 ? (totalActiveMiB/totalAllocMiB*100) : 0;
+    var standbyPct = totalAllocMiB>0 ? (totalStandbyMiB/totalAllocMiB*100) : 0;
+    var ratio = totalActiveMiB>0 ? (totalStandbyMiB/totalActiveMiB) : (totalStandbyMiB>0?999:0);
+    clusterHtml += '<div class="grid cols-4" style="margin-top:8px;">'+[
+      {lbl:'Active Memory (In Use)', val:fmt(mibToGB(totalActiveMiB),0)+' GB', sub:fmt(activePct,1)+'% of allocated'},
+      {lbl:'Standby Memory (Cold/Idle)', val:fmt(mibToGB(totalStandbyMiB),0)+' GB', sub:fmt(standbyPct,1)+'% of allocated', cls:standbyPct>=50?'warn':''},
+      {lbl:'Active : Standby Ratio', val:'1 : '+fmt(ratio,2), sub: ratio>1 ? 'Standby > Active — High tiering potential' : 'Active > Standby'},
+      {lbl:'Memory Tiering Potential', val: standbyPct>=50?'High':(standbyPct>=25?'Medium':'Low'), sub:'Based on total Standby ratio', cls: standbyPct>=50?'ok':(standbyPct>=25?'warn':'')}
+    ].map(function(s){ return '<div class="stat '+(s.cls||'')+'"><div class="lbl">'+s.lbl+'</div><div class="val">'+s.val+'</div><div class="sub">'+s.sub+'</div></div>'; }).join('')+'</div>';
+    var tieringRows = tieringVms.map(function(v){
+      var active = Math.min(v.memActiveMiB, v.memMiB);
+      var standby = Math.max(0, v.memMiB - active);
+      var standbyPctVm = v.memMiB>0 ? (standby/v.memMiB*100) : 0;
+      return {name:v.name, allocGB:mibToGB(v.memMiB), activeGB:mibToGB(active), standbyGB:mibToGB(standby), standbyPct:standbyPctVm};
+    }).sort(function(a,b){ return b.standbyGB - a.standbyGB; }).slice(0,10);
+    clusterHtml += '<div style="font-size:10.5px; color:var(--muted); margin:10px 0 6px 0;">Top 10 VMs with highest Standby Memory (best tiering candidates)</div>';
+    clusterHtml += '<div class="table-wrap"><table>'+
+      '<thead><tr><th>VM</th><th class="num">Allocated (GB)</th><th class="num">Active (GB)</th><th class="num">Standby (GB)</th><th>Standby %</th></tr></thead><tbody>'+
+      tieringRows.map(function(r){
+        return '<tr><td>'+esc(r.name)+'</td><td class="num">'+fmt(r.allocGB,1)+'</td><td class="num">'+fmt(r.activeGB,1)+'</td><td class="num">'+fmt(r.standbyGB,1)+'</td>'+
+          '<td><div class="bar-track"><div class="bar-fill" style="width:'+Math.min(r.standbyPct,100)+'%; background:'+(r.standbyPct>=50?'#3ED2A0':'#5AA9E6')+'"></div></div><span class="pill" style="margin-top:4px; display:inline-block;">'+fmt(r.standbyPct,1)+'%</span></td></tr>';
+      }).join('') + '</tbody></table></div>';
+    document.getElementById('cp-tiering-body').innerHTML = clusterHtml;
   }
 
   function renderStorage(D){
@@ -1700,10 +1963,10 @@
     var overPct = totalCap>0 ? (totalProv/totalCap*100) : 0;
 
     document.getElementById('st-stats').innerHTML = [
-      {lbl:'Capacity รวม', val:fmt(mibToTB(totalCap),2)+' TB', sub:D.datastores.length+' datastore'},
-      {lbl:'Used รวม', val:fmt(mibToTB(totalUsed),2)+' TB', sub:fmt(totalCap>0?totalUsed/totalCap*100:0,1)+'% ของ capacity'},
-      {lbl:'Provisioned รวม', val:fmt(mibToTB(totalProv),2)+' TB', sub:'รวม thin-provision'},
-      {lbl:'Oversubscription', val:fmt(overPct,0)+'%', sub: overPct>150 ? 'จัดสรรเกิน capacity มาก' : 'อยู่ในเกณฑ์ทั่วไป'}
+      {lbl:'Total Capacity', val:fmt(mibToTB(totalCap),2)+' TB', sub:D.datastores.length+' datastore'},
+      {lbl:'Total Used', val:fmt(mibToTB(totalUsed),2)+' TB', sub:fmt(totalCap>0?totalUsed/totalCap*100:0,1)+'% of capacity'},
+      {lbl:'Total Provisioned', val:fmt(mibToTB(totalProv),2)+' TB', sub:'Including thin-provision'},
+      {lbl:'Oversubscription', val:fmt(overPct,0)+'%', sub: overPct>150 ? 'Significantly over-allocated' : 'Normal range'}
     ].map(function(s){ return '<div class="stat"><div class="lbl">'+s.lbl+'</div><div class="val">'+s.val+'</div><div class="sub">'+s.sub+'</div></div>'; }).join('');
 
     var sorted = D.datastores.slice().sort(function(a,b){return b.usedPct-a.usedPct;});
@@ -1796,8 +2059,8 @@
     if(keys.length){
       CHARTS.tools = new Chart(document.getElementById('chart-tools'), {
         type:'doughnut',
-        data:{ labels:keys, datasets:[{data:keys.map(function(k){return counts[k];}), backgroundColor:keys.map(function(k){return TIER_COLOR[tier(k)];}), borderColor:'#1A222B', borderWidth:2}] },
-        options:{ plugins:{legend:{position:'bottom', labels:{color:'#8B96A3', font:{size:11}}}}, maintainAspectRatio:false }
+        data:{ labels:keys, datasets:[{data:keys.map(function(k){return counts[k];}), backgroundColor:keys.map(function(k){return TIER_COLOR[tier(k)];}), borderColor:'#FFFFFF', borderWidth:2}] },
+        options:{ plugins:{legend:{position:'bottom', labels:{color:'#667085', font:{size:11}}}}, maintainAspectRatio:false }
       });
     }
     var okCount = D.toolsRows.filter(function(t){return tier(t.status)==='ok';}).length;
@@ -1805,9 +2068,9 @@
     var badCount = D.toolsRows.filter(function(t){return tier(t.status)==='bad';}).length;
     document.getElementById('tools-stats').innerHTML = [
       {lbl:'Tools ปกติ (toolsOk)', val:fmt(okCount), sub:'ทำงานและเป็นเวอร์ชันล่าสุด', cls:'ok'},
-      {lbl:'เวอร์ชันเก่า (toolsOld)', val:fmt(oldCount), sub:'ยังทำงานอยู่ แต่ควรอัปเดต — ความเสี่ยงต่ำกว่า', cls:oldCount?'warn':''},
+      {lbl:'เวอร์ชันเก่า (toolsOld)', val:fmt(oldCount), sub:'ยังทำงานอยู่ แต่ควรอัปเดต — ความเสี่ยงLowกว่า', cls:oldCount?'warn':''},
       {lbl:'ไม่ได้ติดตั้ง/ไม่ทำงาน', val:fmt(badCount), sub:'notRunning/notInstalled — ควรแก้ไขก่อน toolsOld', cls:badCount?'bad':''},
-      {lbl:'รวม VM ที่มีข้อมูล Tools', val:fmt(D.toolsRows.length), sub:D.realVms.length+' VM ทั้งหมด'}
+      {lbl:'รวม VM ที่have data Tools', val:fmt(D.toolsRows.length), sub:D.realVms.length+' VM ทั้งหมด'}
     ].map(function(s){ return '<div class="stat '+(s.cls||'')+'"><div class="lbl">'+s.lbl+'</div><div class="val">'+s.val+'</div><div class="sub">'+s.sub+'</div></div>'; }).join('');
 
     var needsAttention = D.toolsRows.filter(function(t){ var tr=tier(t.status); return tr==='bad'||tr==='warn'; })
@@ -1821,7 +2084,7 @@
       }).join('') + '</tbody>';
     if(!D.toolsRows.length){
       document.querySelector('#sec-tools .chart-box').innerHTML = '<div class="empty-note">ไม่พบชีต vTools ในไฟล์นี้</div>';
-      document.getElementById('tbl-tools').parentElement.innerHTML = '<div class="empty-note">ไม่มีข้อมูล</div>';
+      document.getElementById('tbl-tools').parentElement.innerHTML = '<div class="empty-note">ไม่have data</div>';
     } else if(!needsAttention.length){
       document.getElementById('tbl-tools').parentElement.innerHTML = '<div class="empty-note">ทุก VM มี VMware Tools ทำงานปกติ</div>';
     }
@@ -1835,7 +2098,7 @@
       if(hostBuild >= threshold){
         return {status:'patched', note:'build ปัจจุบัน '+hostBuild+' ≥ build ที่แก้ไขแล้ว ('+threshold+')'};
       }
-      return {status:'vulnerable', note:'build ปัจจุบัน '+hostBuild+' ต่ำกว่า build ที่แก้ไขแล้ว ('+threshold+') — ยังไม่ได้แพตช์'};
+      return {status:'vulnerable', note:'build ปัจจุบัน '+hostBuild+' Lowกว่า build ที่แก้ไขแล้ว ('+threshold+') — ยังไม่ได้แพตช์'};
     }
     return {status:'unknown', note: hostBuild ? ('ตรวจพบ build '+hostBuild+' แต่เครื่องมือนี้ยังไม่มีเลข build อ้างอิงสำหรับ VMSA นี้ — เทียบกับ Response Matrix เอง') : 'ไม่พบเลข build ของ host นี้ในไฟล์ RVTools — เทียบเวอร์ชันกับ Response Matrix ด้วยตนเอง'};
   }
@@ -1880,7 +2143,7 @@
     document.getElementById('sec-count-tag').textContent = findings.length + ' รายการ';
 
     if(!findings.length){
-      document.getElementById('sec-findings').innerHTML = '<div class="empty-note">ไม่พบช่องโหว่ในฐานข้อมูล VMSA ที่คัดเลือกไว้ ที่ตรงกับเวอร์ชัน ESXi/vCenter ที่ตรวจพบในไฟล์นี้ (หรือไม่สามารถระบุเวอร์ชันได้ — ดูแท็บ Software Expire) โปรดตรวจสอบว่ามีการอัปเดตแพตช์สม่ำเสมออยู่แล้ว</div>';
+      document.getElementById('sec-findings').innerHTML = '<div class="empty-note">ไม่พบช่องโหว่ในฐานข้อมูล VMSA ที่คัดเลือกไว้ ที่ตรงกับเวอร์ชัน ESXi/vCenter ที่ตรวจพบในไฟล์นี้ (หรือไม่สามารถระบุเวอร์ชันได้ — ดูแท็บ Software Expire) Please check that patches are being updated regularly</div>';
       return;
     }
 
@@ -1991,7 +2254,7 @@
 
     if(E.unrecognized.length){
       document.getElementById('tbl-os-eol').insertAdjacentHTML('afterend',
-        '<div class="empty-note">'+E.unrecognized.length+' VM มี Guest OS ที่ไม่อยู่ในฐานข้อมูล EOL ของเครื่องมือนี้ (เช่น distro/เวอร์ชันที่พบไม่บ่อย) — ตรวจสอบ EOL ของระบบเหล่านี้ด้วยตนเองจากผู้ผลิต</div>');
+        '<div class="empty-note">'+E.unrecognized.length+' VM มี Guest OS ที่ไม่อยู่ในฐานข้อมูล EOL ของเครื่องมือนี้ (เช่น distro/เวอร์ชันที่พบไม่บ่อย) — ตรวจสอบ EOL of these systems yourself from the manufacturer</div>');
     }
   }
   function realVmsCount(D){ return D.realVms.length; }
@@ -2052,7 +2315,7 @@
     h_softwareEOL: {th:'3.3 Software information (End of Support)', en:'3.3 Software information (End of Support)'},
     h_softwareVersion: {th:'3.4 Software version information', en:'3.4 Software version information'},
     h_certExpire: {th:'3.5 Certificate Expire', en:'3.5 Certificate Expire'},
-    h_manualNote: {th:'หมายเหตุ: ส่วนที่ต้องกรอกข้อมูลเพิ่มเติมด้วยตนเอง', en:'Note: Sections Requiring Manual Input'},
+    h_manualNote: {th:'หมายเหตุ: Sections that require additional manual input', en:'Note: Sections Requiring Manual Input'},
 
     fld_hostname: {th:'Hostname', en:'Hostname'},
     fld_currentBuild: {th:'Current Build/Patch', en:'Current Build/Patch'},
@@ -2060,7 +2323,7 @@
     val_notFoundViSdk: {th:'[ไม่พบคอลัมน์ VI SDK Server type / VI SDK API Version ในไฟล์นี้]', en:'[VI SDK Server type / VI SDK API Version column not found in this file]'},
 
     p_vcenterStatusUp: {th:'{server} server สามารถเชื่อมต่อและ export ข้อมูล RVTools ได้สำเร็จ ณ เวลาที่จัดทำไฟล์ — บ่งชี้ว่า service อยู่ในสถานะทำงานปกติ', en:'{server} server was reachable and the RVTools export succeeded at the time this file was created — indicating the service is running normally.'},
-    p_vcenterStatusUnknown: {th:'ไม่สามารถยืนยันสถานะจากไฟล์นี้ได้', en:'Status could not be confirmed from this file.'},
+    p_vcenterStatusUnknown: {th:'Cannot confirm status from this file', en:'Status could not be confirmed from this file.'},
     note_vcenterStatus: {th:'หมายเหตุ: RVTools ไม่ได้บันทึก system log/service status โดยตรง ควรตรวจสอบ vCenter > Monitor > ด้วยตนเองเพื่อยืนยัน', en:'Note: RVTools does not record system log/service status directly. Please verify manually via vCenter > Monitor.'},
 
     th_no: {th:'No.', en:'No.'},
@@ -2072,13 +2335,13 @@
     st_normal: {th:'Normal', en:'Normal'},
     st_warning: {th:'Warning', en:'Warning'},
     st_critical: {th:'Critical', en:'Critical'},
-    note_noHostUsage: {th:'หมายเหตุ: ไฟล์นี้ไม่มีข้อมูล CPU/Memory Usage % ระดับ host (ต้องเชื่อมต่อ vCenter แบบสดตอน export RVTools) แสดงเฉพาะ core/RAM ที่มีอยู่', en:'Note: This file has no host-level CPU/Memory Usage % data (requires a live vCenter connection during RVTools export). Only available core/RAM figures are shown.'},
+    note_noHostUsage: {th:'หมายเหตุ: ไฟล์นี้ไม่have data CPU/Memory Usage % ระดับ host (ต้องเชื่อมต่อ vCenter แบบสดตอน export RVTools) แสดงเฉพาะ core/RAM ที่มีอยู่', en:'Note: This file has no host-level CPU/Memory Usage % data (requires a live vCenter connection during RVTools export). Only available core/RAM figures are shown.'},
 
     th_vmName: {th:'VM Name', en:'VM Name'},
     th_vcpu: {th:'vCPU', en:'vCPU'},
     th_memUsageGB: {th:'Memory Usage (GB)', en:'Memory Usage (GB)'},
     th_ramAllocGB: {th:'RAM จัดสรร (GB)', en:'Allocated RAM (GB)'},
-    note_top10: {th:'หมายเหตุ: แสดง Top 10 แทนรายการ VM ทั้งหมด — ค่าที่ใช้เป็นค่าจัดสรร/usage ที่มีจริงในไฟล์ RVTools (RVTools ไม่บันทึก CPU usage MHz ระดับ VM)', en:'Note: Showing Top 10 instead of the full VM list — values reflect allocation/usage actually present in the RVTools file (RVTools does not record VM-level CPU usage in MHz).'},
+    note_top10: {th:'หมายเหตุ: แสดง Top 10 แทนAll VMs — ค่าที่ใช้เป็นค่าจัดสรร/usage ที่มีจริงในไฟล์ RVTools (RVTools ไม่บันทึก CPU usage MHz ระดับ VM)', en:'Note: Showing Top 10 instead of the full VM list — values reflect allocation/usage actually present in the RVTools file (RVTools does not record VM-level CPU usage in MHz).'},
 
     th_datastoreName: {th:'Datastore Name', en:'Datastore Name'},
     th_capacityGB: {th:'Capacity (GB)', en:'Capacity (GB)'},
@@ -2089,7 +2352,7 @@
     remark_watch: {th:'ควรเฝ้าระวัง', en:'Should be monitored'},
     note_datastoreLegend: {th:'* Datastore usage 0-74% Normal, 75-89% Warning, 90-100% Alert', en:'* Datastore usage 0-74% Normal, 75-89% Warning, 90-100% Alert'},
 
-    p_cpuRatioNote: {th:'คำนวณด้วย CPU Ratio (vCPU:pCPU) = {ratio}:1 (ปรับค่าได้ที่แท็บ Compute Planning) — N-1 คือการจำลอง host ที่มีทรัพยากรมากที่สุดในคลัสเตอร์เสียหาย 1 ตัว', en:'Calculated using CPU Ratio (vCPU:pCPU) = {ratio}:1 (adjustable in the Compute Planning tab) — N-1 simulates the failure of the single largest-resource host in the cluster.'},
+    p_cpuRatioNote: {th:'คำนวณด้วย CPU Ratio (vCPU:pCPU) = {ratio}:1 (ปรับค่าได้ที่แท็บ Compute Planning) — N-1 คือการจำลอง host with the most resources in the failed cluster 1 ตัว', en:'Calculated using CPU Ratio (vCPU:pCPU) = {ratio}:1 (adjustable in the Compute Planning tab) — N-1 simulates the failure of the single largest-resource host in the cluster.'},
     note_noClusterData: {th:'ไม่พบข้อมูล cluster ในไฟล์นี้', en:'No cluster data found in this file.'},
     p_clusterLine: {th:'Cluster: {name} ({hostCount} host, vCPU จัดสรร {vcpu}, vRAM จัดสรร {ram} GB)', en:'Cluster: {name} ({hostCount} host(s), Allocated vCPU {vcpu}, Allocated vRAM {ram} GB)'},
     lbl_cpuUtil: {th:'CPU Utilization', en:'CPU Utilization'},
@@ -2098,7 +2361,7 @@
     lbl_memN1: {th:'Memory (N-1)', en:'Memory (N-1)'},
     note_needTwoHosts: {th:'ต้องมี host อย่างน้อย 2 ตัวในคลัสเตอร์นี้จึงจะจำลอง N-1 ได้', en:'At least 2 hosts are required in this cluster to simulate N-1.'},
 
-    p_conclusion: {th:'ทีมงาน MFEC ดำเนินการตรวจสอบระบบ{dateClause}{customerClause} สรุปสถานะการใช้งานและความพร้อมของระบบได้ดังตารางด้านล่าง', en:'The MFEC team performed a system health check{dateClause}{customerClause}. The status summary is shown in the table below.'},
+    p_conclusion: {th:'ทีมงาน MFEC ดำเนินการตรวจสอบระบบ{dateClause}{customerClause} System usage and readiness summary is shown in the table below', en:'The MFEC team performed a system health check{dateClause}{customerClause}. The status summary is shown in the table below.'},
     dateClause: {th:' บนวันที่ <b>{date}</b>', en:' on <b>{date}</b>'},
     customerClause: {th:' ให้กับ <b>{customer}</b>', en:' for <b>{customer}</b>'},
     th_vmwareStatusTitle: {th:'VMware vSphere vCenter and ESXi Status', en:'VMware vSphere vCenter and ESXi Status'},
@@ -2119,13 +2382,13 @@
     th_currentVersion: {th:'Current version of customer', en:'Current version of customer'},
     th_latestVersion: {th:'Latest version from product', en:'Latest version from product'},
     val_checkLifecycle: {th:'[ตรวจสอบที่ Broadcom Product Lifecycle]', en:'[Check Broadcom Product Lifecycle]'},
-    note_upgradeAdvice: {th:'หมายเหตุ: หากลูกค้าต้องการอัปเกรดซอฟต์แวร์เป็นเวอร์ชันล่าสุด MFEC แนะนำให้อัปเกรดเมื่อ: (1) เวอร์ชันปัจจุบันมีปัญหา/บั๊กที่ทราบแล้วซึ่งกระทบการใช้งาน (2) ลูกค้าต้องการฟีเจอร์ใหม่ หรือ (3) เวอร์ชันปัจจุบันหมดระยะซัพพอร์ตแล้ว', en:'Note: If customers would like to upgrade the software to the latest version, MFEC recommends upgrading only when: (1) the current version has a known issue/bug impacting service, (2) customer needs new features, or (3) the current version has reached end of support.'},
+    note_upgradeAdvice: {th:'หมายเหตุ: If the customer wants to upgrade software to the latest version MFEC แนะนำให้อัปเกรดเมื่อ: (1) เวอร์ชันปัจจุบันมีปัญหา/Known bugs that affect usage (2) ลูกค้าต้องการฟีเจอร์ใหม่ หรือ (3) Current version has reached end of support', en:'Note: If customers would like to upgrade the software to the latest version, MFEC recommends upgrading only when: (1) the current version has a known issue/bug impacting service, (2) customer needs new features, or (3) the current version has reached end of support.'},
     note_versionSource: {th:'หมายเหตุ: "Current version of customer" ของ vCenter อ้างอิงค่าจากคอลัมน์ VI SDK Server type ในชีต vInfo (fallback เป็น VI SDK API Version หากไม่พบ)', en:'Note: The vCenter "Current version of customer" is derived from the VI SDK Server type column in the vInfo sheet (falls back to VI SDK API Version if not found).'},
 
     th_expireDate: {th:'Expire date', en:'Expire date'},
-    val_certManual: {th:'[กรอกเอง — RVTools ไม่มีข้อมูลใบรับรอง]', en:'[Fill in manually — RVTools has no certificate data]'},
+    val_certManual: {th:'[กรอกเอง — RVTools ไม่have dataใบรับรอง]', en:'[Fill in manually — RVTools has no certificate data]'},
 
-    p_manualIntro: {th:'รายงานต้นฉบับ (MFEC Preventive Maintenance Report) มีหัวข้อที่ต้องใช้ข้อมูลจากแหล่งอื่นนอกเหนือจากไฟล์ RVTools เนื่องจาก RVTools เก็บเฉพาะข้อมูล inventory/config ของ vSphere เท่านั้น ได้แก่:', en:'The original MFEC Preventive Maintenance Report template includes sections that require data from sources other than the RVTools file, since RVTools only captures vSphere inventory/config data. These are:'},
+    p_manualIntro: {th:'รายงานต้นฉบับ (MFEC Preventive Maintenance Report) There are topics that require data from sources other than the file RVTools เนื่องจาก RVTools เก็บเฉพาะข้อมูล inventory/config ของ vSphere เท่านั้น ได้แก่:', en:'The original MFEC Preventive Maintenance Report template includes sections that require data from sources other than the RVTools file, since RVTools only captures vSphere inventory/config data. These are:'},
     th_topic: {th:'หัวข้อ', en:'Topic'},
     th_dataSource: {th:'แหล่งข้อมูลที่ต้องใช้เพิ่ม', en:'Additional Data Source Required'},
     manual_1_topic: {th:'General Project Information', en:'General Project Information'},
@@ -2144,7 +2407,7 @@
     manual_7_src: {th:'Switch CLI/SNMP + Cisco EoS/EoL lookup', en:'Switch CLI/SNMP + Cisco EoS/EoL lookup'},
     manual_8_topic: {th:'Certificate Expire', en:'Certificate Expire'},
     manual_8_src: {th:'ตรวจสอบใบรับรองบนแต่ละ endpoint โดยตรง (เช่น openssl/เครื่องมือสแกน cert)', en:'Check certificates on each endpoint directly (e.g. openssl/cert scanning tools)'},
-    note_finalFooter: {th:'ส่วนด้านบนนี้ (1. vCenter, 2. Resource Utilization by Cluster, 3.1–3.4 Executive Summary) คือทั้งหมดที่สร้างจากข้อมูลจริงในไฟล์ RVTools ที่อัปโหลด', en:'The sections above (1. vCenter, 2. Resource Utilization by Cluster, 3.1–3.4 Executive Summary) are entirely generated from real data in the uploaded RVTools file.'}
+    note_finalFooter: {th:'ส่วนด้านบนนี้ (1. vCenter, 2. Resource Utilization by Cluster, 3.1–3.4 Executive Summary) is all generated from actual data in the file RVTools ที่อัปโหลด', en:'The sections above (1. vCenter, 2. Resource Utilization by Cluster, 3.1–3.4 Executive Summary) are entirely generated from real data in the uploaded RVTools file.'}
   };
   function T(key, vars){
     var entry = TPL_I18N[key];
@@ -2269,8 +2532,8 @@
     }
     clusterNames.forEach(function(cName, ci){
       var base = simBaseValues(D, cName, {});
-      var effCores = base.totalCores*cpuRatio;
-      var cpuPct = effCores>0 ? (base.allocVCPU/effCores*100) : (base.allocVCPU>0?999:0);
+      var hostsWithCpu = base.hostsIn.filter(function(h){ return h.cpuUsagePct!=null; });
+      var cpuPct = hostsWithCpu.length>0 ? hostsWithCpu.reduce(function(a,h){return a+h.cpuUsagePct;},0)/hostsWithCpu.length : 0;
       var memPct = base.totalRamGB>0 ? (base.allocVRamGB/base.totalRamGB*100) : (base.allocVRamGB>0?999:0);
       var idCpu = 'tplc'+ci+'cpu', idMem = 'tplc'+ci+'mem', idN1Cpu = 'tplc'+ci+'n1cpu', idN1Mem = 'tplc'+ci+'n1mem';
       html += '<p class="tpl-p" style="margin-top:14px;"><b>'+T('p_clusterLine',{name:esc(cName), hostCount:fmt(base.hostCount), vcpu:fmt(base.allocVCPU), ram:fmt(base.allocVRamGB,0)})+'</b></p>';
@@ -2282,14 +2545,14 @@
         var failRamGB = base.largestByRam?mibToGB(base.largestByRam.memMiB):0;
         var n1Cores = Math.max(0, base.totalCores-failCores);
         var n1RamGB = Math.max(0, base.totalRamGB-failRamGB);
-        var n1EffCores = n1Cores*cpuRatio;
-        var n1CpuPct = n1EffCores>0 ? (base.allocVCPU/n1EffCores*100) : (base.allocVCPU>0?999:0);
+        var n1Hosts = base.hostsIn.filter(function(h){ return h!==base.largestByCores && h.cpuUsagePct!=null; });
+        var n1CpuPct = n1Hosts.length>0 ? n1Hosts.reduce(function(a,h){return a+h.cpuUsagePct;},0)/n1Hosts.length : 0;
         var n1MemPct = n1RamGB>0 ? (base.allocVRamGB/n1RamGB*100) : (base.allocVRamGB>0?999:0);
         html += '<td style="border:none; width:25%; text-align:center;">'+T('lbl_cpuN1')+'<br><div style="height:150px;"><canvas id="'+idN1Cpu+'"></canvas></div></td>'+
           '<td style="border:none; width:25%; text-align:center;">'+T('lbl_memN1')+'<br><div style="height:150px;"><canvas id="'+idN1Mem+'"></canvas></div></td>';
         clusterChartIds.push({name:cName, cpu:idCpu, mem:idMem, n1cpu:idN1Cpu, n1mem:idN1Mem, cpuPct:cpuPct, memPct:memPct, n1CpuPct:n1CpuPct, n1MemPct:n1MemPct});
       }else{
-        html += '<td style="border:none; width:50%; text-align:center; color:#777; font-size:11px;" colspan="2">'+T('note_needTwoHosts')+'</td>';
+        html += '<td style="border:none; width:50%; text-align:center; color:#98A2B3; font-size:11px;" colspan="2">'+T('note_needTwoHosts')+'</td>';
         clusterChartIds.push({name:cName, cpu:idCpu, mem:idMem, n1cpu:null, n1mem:null, cpuPct:cpuPct, memPct:memPct});
       }
       html += '</tr></tbody></table>';
@@ -2373,19 +2636,19 @@
     var issuesTh = [], issuesEn = [];
     if(lowDS.length){ issuesTh.push('- Datastore '+lowDS.length+' แห่ง มีพื้นที่ใช้งานเกิน 85% ควรเพิ่มพื้นที่หรือย้ายข้อมูล'); issuesEn.push('- '+lowDS.length+' datastore(s) are above 85% used capacity and should be expanded or rebalanced.'); }
     else if(warnDS.length){ issuesTh.push('- Datastore '+warnDS.length+' แห่ง ใช้งานเกิน 75% ควรเฝ้าระวัง'); issuesEn.push('- '+warnDS.length+' datastore(s) are above 75% used capacity and should be monitored.'); }
-    if(oldSnap.length){ issuesTh.push('- พบ Snapshot ที่มีอายุเกิน 30 วัน จำนวน '+oldSnap.length+' รายการ ควรลบหรือรวมเพื่อคืนพื้นที่และประสิทธิภาพ'); issuesEn.push('- '+oldSnap.length+' snapshot(s) older than 30 days were found and should be removed or consolidated.'); }
+    if(oldSnap.length){ issuesTh.push('- พบ Snapshot ที่มีอายุเกิน 30 วัน จำนวน '+oldSnap.length+' รายการ Should be deleted or consolidated to reclaim space and performance'); issuesEn.push('- '+oldSnap.length+' snapshot(s) older than 30 days were found and should be removed or consolidated.'); }
     var expiredEsxi = E.esxiRows.filter(function(r){return r.days!=null && r.days<0;});
     if(expiredEsxi.length){ issuesTh.push('- ESXi Host '+expiredEsxi.length+' เครื่อง หมดระยะซัพพอร์ตแล้ว ควรวางแผนอัปเกรด'); issuesEn.push('- '+expiredEsxi.length+' ESXi host(s) are past end of support and should be upgraded.'); }
     if(E.vcInfo && E.vcDays!=null && E.vcDays<0){ issuesTh.push('- vCenter Server หมดระยะซัพพอร์ตแล้ว ควรวางแผนอัปเกรด'); issuesEn.push('- vCenter Server is past end of support and should be upgraded.'); }
-    if(!issuesTh.length){ issuesTh.push('- ไม่พบประเด็นผิดปกติที่เด่นชัดจากข้อมูลที่ตรวจสอบ'); issuesEn.push('- No significant issues were found in this review.'); }
+    if(!issuesTh.length){ issuesTh.push('- No significant anomalies found from the data reviewed'); issuesEn.push('- No significant issues were found in this review.'); }
     var overallTh = (lowDS.length||expiredEsxi.length||(E.vcInfo&&E.vcDays!=null&&E.vcDays<0)) ? 'ควรดำเนินการแก้ไขในบางรายการ' : 'ระบบโดยรวมอยู่ในสถานะปกติ';
     var overallEn = (lowDS.length||expiredEsxi.length||(E.vcInfo&&E.vcDays!=null&&E.vcDays<0)) ? 'Some items require action.' : 'The system is overall in normal condition.';
 
     var clusterUtilLinesTh = [], clusterUtilLinesEn = [];
     clusterNames.forEach(function(cName){
       var base = simBaseValues(D, cName, {});
-      var effCores = base.totalCores*cpuRatio;
-      var cpuPct = effCores>0 ? (base.allocVCPU/effCores*100) : (base.allocVCPU>0?999:0);
+      var hostsWithCpu = base.hostsIn.filter(function(h){ return h.cpuUsagePct!=null; });
+      var cpuPct = hostsWithCpu.length>0 ? hostsWithCpu.reduce(function(a,h){return a+h.cpuUsagePct;},0)/hostsWithCpu.length : 0;
       var memPct = base.totalRamGB>0 ? (base.allocVRamGB/base.totalRamGB*100) : (base.allocVRamGB>0?999:0);
       clusterUtilLinesTh.push('- '+cName+': CPU '+fmt(cpuPct,1)+'%, Memory '+fmt(memPct,1)+'% ('+fmt(base.hostCount)+' host)');
       clusterUtilLinesEn.push('- '+cName+': CPU '+fmt(cpuPct,1)+'%, Memory '+fmt(memPct,1)+'% ('+fmt(base.hostCount)+' host(s))');
@@ -2402,7 +2665,7 @@
       'Utilization ตาม Cluster (คำนวณด้วย CPU Ratio '+fmt(cpuRatio,1)+':1):\n'+clusterUtilLinesTh.join('\n')+'\n\n'+
       'ประเด็นที่พบ:\n'+issuesTh.join('\n')+'\n\n'+
       'สถานะโดยรวม: '+overallTh+'\n\n'+
-      'รายละเอียดเพิ่มเติมตามเอกสารรายงานที่แนบมาพร้อมนี้ หากมีข้อสงสัยประการใด ทีมงานยินดีให้ข้อมูลเพิ่มเติมครับ/ค่ะ\n\n'+
+      'For more details, see the attached report document หากมีข้อสงสัยประการใด The team is happy to provide more information/ค่ะ\n\n'+
       'ขอบคุณครับ/ค่ะ\n'+(preparedby||'[ผู้จัดทำ]')+'\nMFEC';
 
     var emailEn = 'Subject: VMware Infrastructure Health Check Summary'+(pmdate?(' — '+pmdate):'')+'\n\n'+
@@ -2499,7 +2762,7 @@
   }
 
   function exportToWord(D){
-    if(!window.docx){ alert('ไลบรารีสร้างไฟล์ Word (docx.js) โหลดไม่สำเร็จ — ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองใหม่'); return; }
+    if(!window.docx){ alert('ไลบรารีสร้างไฟล์ Word (docx.js) โหลดไม่สำเร็จ — Check your internet connection and try again'); return; }
     var dx = window.docx;
     var E = computeExpireData(D);
     var customer = (document.getElementById('inp-customer').value||'').trim() || T('customerPh');
@@ -2695,7 +2958,7 @@
         .sort(function(a,b){ return new Date(b.published) - new Date(a.published); });
 
       if(!items.length){
-        el.innerHTML = '<div class="empty-note">ไม่พบ CVE ใหม่ที่เกี่ยวกับ VMware ESXi/vCenter ใน NVD ช่วง 120 วันที่ผ่านมา (หรือ NVD ยังไม่ได้จัดทำดัชนีคำอธิบายที่ระบุคำเหล่านี้ชัดเจน)</div>';
+        el.innerHTML = '<div class="empty-note">ไม่พบ CVE ใหม่ที่เกี่ยวกับ VMware ESXi/vCenter ใน NVD ช่วง 120 วันที่ผ่านมา (หรือ NVD A glossary clearly defining these terms has not been prepared)</div>';
         tag.textContent = 'อัปเดตล่าสุด: '+new Date().toLocaleString('th-TH');
         return;
       }
@@ -2708,11 +2971,11 @@
             '<td><span class="pill '+sevCls+'">'+esc(x.sev||'-')+'</span></td>'+
             '<td style="max-width:420px;">'+esc(x.desc.length>220?(x.desc.slice(0,220)+'…'):x.desc)+'</td></tr>';
         }).join('') + '</tbody></table></div>'+
-        '<div class="empty-note">รายการนี้ดึงจาก NVD ตามคำค้น "VMware ESXi"/"VMware vCenter" ในช่วง 120 วันล่าสุด เป็นข้อมูลเสริมเพื่อแจ้งเตือน — ยังไม่ได้ผนวกเข้ากับตารางจับคู่เวอร์ชันด้านบน โปรดตรวจสอบ VMSA ที่เกี่ยวข้องบน Broadcom Support Portal ด้วยตนเอง</div>';
+        '<div class="empty-note">รายการนี้ดึงจาก NVD ตามคำค้น "VMware ESXi"/"VMware vCenter" ในช่วง 120 วันล่าสุด เป็นข้อมูลเสริมเพื่อแจ้งเตือน — Not yet included in the version mapping table above โปรดตรวจสอบ VMSA ที่เกี่ยวข้องบน Broadcom Support Portal ด้วยตนเอง</div>';
       tag.textContent = 'อัปเดตล่าสุด: '+new Date().toLocaleString('th-TH');
     }).catch(function(err){
       console.error(err);
-      el.innerHTML = '<div class="empty-note">ไม่สามารถดึงข้อมูลล่าสุดจาก NVD ได้ตอนนี้ (อาจถูกจำกัดโดยเครือข่าย/CORS/rate limit ของ NVD) — ใช้ฐานข้อมูล VMSA ที่มีอยู่ในเครื่องมือนี้แทนไปก่อน (ปรับปรุงล่าสุด ก.ย. 2569) รายละเอียด: '+esc(err.message)+'</div>';
+      el.innerHTML = '<div class="empty-note">ไม่สามารถดึงข้อมูลล่าสุดจาก NVD ได้ตอนนี้ (อาจถูกจำกัดโดยเครือข่าย/CORS/rate limit ของ NVD) — ใช้ฐานข้อมูล VMSA available in this tool instead for now (ปรับปรุงล่าสุด ก.ย. 2569) รายละเอียด: '+esc(err.message)+'</div>';
       tag.textContent = 'ดึงข้อมูลไม่สำเร็จ';
     });
   }
@@ -2765,12 +3028,12 @@
     killChart(canvasId);
     var labels = ['ใช้งาน/จัดสรรแล้ว','ว่าง'];
     var data = [d.used, d.free];
-    var colors = [usedPct>=90?'#E2596B':(usedPct>=75?'#F0A857':'#3ED2A0'),'#2C3742'];
+    var colors = [usedPct>=90?'#E2596B':(usedPct>=75?'#F0A857':'#3ED2A0'),'#D0D5DD'];
     if(d.over>0){ labels = ['เกินขีดความสามารถ (Over-provisioned)','ใช้งานอยู่ในขอบเขต']; data=[Math.min(d.over,100),100-Math.min(d.over,100)]; colors=['#E2596B','#5A2A32']; }
     CHARTS[canvasId] = new Chart(document.getElementById(canvasId), {
       type:'doughnut',
-      data:{ labels:labels, datasets:[{data:data, backgroundColor:colors, borderColor:'#1A222B', borderWidth:2}] },
-      options:{ plugins:{legend:{position:'bottom', labels:{color:'#8B96A3', font:{size:10.5}}}}, maintainAspectRatio:false }
+      data:{ labels:labels, datasets:[{data:data, backgroundColor:colors, borderColor:'#FFFFFF', borderWidth:2}] },
+      options:{ plugins:{legend:{position:'bottom', labels:{color:'#667085', font:{size:10.5}}}}, maintainAspectRatio:false }
     });
   }
 
@@ -2839,11 +3102,13 @@
     var effectiveCoresCur = base.totalCores * cpuRatio;
     var effectiveCoresNew = newCores * cpuRatio;
 
+    // CPU utilization: vCPU / (total cores including new hosts × CPU Ratio)
+    var effectiveCoresNew = newCores * cpuRatio;
     var cpuPct = effectiveCoresNew>0 ? (base.allocVCPU/effectiveCoresNew*100) : (base.allocVCPU>0?999:0);
     var memPct = newRamGB>0 ? (base.allocVRamGB/newRamGB*100) : (base.allocVRamGB>0?999:0);
     var stPct = newStorageTB>0 ? (base.usedStorageTB/newStorageTB*100) : (base.usedStorageTB>0?999:0);
 
-    var curCpuPct = effectiveCoresCur>0 ? (base.allocVCPU/effectiveCoresCur*100) : 0;
+    var curCpuPct = cpuPct;
     var curMemPct = base.totalRamGB>0 ? (base.allocVRamGB/base.totalRamGB*100) : 0;
     var curStPct = base.totalStorageTB>0 ? (base.usedStorageTB/base.totalStorageTB*100) : 0;
 
@@ -2872,7 +3137,7 @@
       n1Note.style.display = 'block';
       n1Note.textContent = newHostCount < 2
         ? 'ต้องมี host อย่างน้อย 2 ตัวขึ้นไปในคลัสเตอร์นี้ (หลังปรับจำนวนแล้ว) จึงจะจำลอง N-1 ได้'
-        : 'ไม่พบ host จริงหรือ host ที่เพิ่มใหม่ในคลัสเตอร์นี้สำหรับใช้จำลอง host ที่ล่ม';
+        : 'ไม่พบ host จริงหรือ host newly added to this cluster for simulation host ที่ล่ม';
       n1Charts.style.display = 'none';
       n1Tag.textContent = '';
     }else{
@@ -2885,9 +3150,20 @@
 
       var n1Cores = Math.max(0, newCores - failCoresVal);
       var n1RamGB = Math.max(0, newRamGB - failRamGBVal);
-      var n1EffectiveCores = n1Cores * cpuRatio;
-      n1CpuPct = n1EffectiveCores>0 ? (base.allocVCPU/n1EffectiveCores*100) : (base.allocVCPU>0?999:0);
-      n1MemPct = n1RamGB>0 ? (base.allocVRamGB/n1RamGB*100) : (base.allocVRamGB>0?999:0);
+      // N-1 CPU: use same method as main CPU pie (avg host CPU usage scaled by remaining cores)
+      var n1CpuPct = 0;
+      if(n1Cores > 0 && cpuPct > 0){
+        n1CpuPct = cpuPct * (newCores / n1Cores);
+      } else if(base.allocVCPU > 0){
+        n1CpuPct = 999;
+      }
+      // N-1 Memory: use same method as main memory pie (standby/active ratio scaled by remaining RAM)
+      var n1MemPct = 0;
+      if(n1RamGB > 0 && memPct > 0){
+        n1MemPct = memPct * (newRamGB / n1RamGB);
+      } else if(base.allocVRamGB > 0){
+        n1MemPct = 999;
+      }
       renderSimPie('chart-sim-n1-cpu', n1CpuPct, 'CPU N-1');
       renderSimPie('chart-sim-n1-mem', n1MemPct, 'Memory N-1');
       var n1Bad = n1CpuPct>100 || n1MemPct>100;
@@ -2920,8 +3196,8 @@
       ['Storage Capacity (TB)', deltaTxt(base.totalStorageTB, newStorageTB, '', 2)],
       ['Storage Used (TB)', fmt(base.usedStorageTB,2)+' (คงที่)'],
       ['Storage Utilization', fmt(curStPct,1)+'% → '+fmt(stPct,1)+'%'],
-      ['N-1 CPU Utilization (host CPU สูงสุดล่ม)', n1CpuPct==null?'—':fmt(n1CpuPct,1)+'%'],
-      ['N-1 Memory Utilization (host Memory สูงสุดล่ม)', n1MemPct==null?'—':fmt(n1MemPct,1)+'%']
+      ['N-1 CPU Utilization (host CPU Highสุดล่ม)', n1CpuPct==null?'—':fmt(n1CpuPct,1)+'%'],
+      ['N-1 Memory Utilization (host Memory Highสุดล่ม)', n1MemPct==null?'—':fmt(n1MemPct,1)+'%']
     ];
     document.getElementById('tbl-sim-summary').innerHTML =
       '<thead><tr><th>Metric</th><th>ปัจจุบัน → หลังจำลอง</th></tr></thead><tbody>'+
@@ -2931,8 +3207,8 @@
     // ---- BOM / pricing request email (Thai + English) ----
     var clusterLabelTh = clusterFilter==='ALL' ? 'ทุกคลัสเตอร์' : clusterFilter;
     var clusterLabelEn = clusterFilter==='ALL' ? 'all clusters' : clusterFilter;
-    var addHostTh = hostDelta>0 ? ('- เพิ่ม Host ใหม่จำนวน '+hostDelta+' เครื่อง (CPU '+fmt(coresPerHost,0)+' core/เครื่อง, RAM '+fmt(ramPerHost,0)+' GB/เครื่อง)\n') : (hostDelta<0 ? ('- ลด/ปลดระวาง Host จำนวน '+(-hostDelta)+' เครื่อง\n') : '');
-    var addHostEn = hostDelta>0 ? ('- Add '+hostDelta+' new host(s) (CPU '+fmt(coresPerHost,0)+' cores/host, RAM '+fmt(ramPerHost,0)+' GB/host)\n') : (hostDelta<0 ? ('- Decommission '+(-hostDelta)+' host(s)\n') : '');
+    var addHostTh = hostDelta>0 ? ('- เพิ่ม Host ใหม่จำนวน '+hostDelta+' เครื่อง (CPU '+fmt(coresPerHost,0)+' core/เครื่อง, RAM '+fmt(ramPerHost,0)+' GB/เครื่อง)\n') : (hostDelta<0 ? ('- ลด/ปลดระวาง Host เก่าจำนวน '+(-hostDelta)+' เครื่อง (Host เก่าที่ถูกนำออกจากระบบ)\n') : '');
+    var addHostEn = hostDelta>0 ? ('- Add '+hostDelta+' new host(s) (CPU '+fmt(coresPerHost,0)+' cores/host, RAM '+fmt(ramPerHost,0)+' GB/host)\n') : (hostDelta<0 ? ('- Decommission '+(-hostDelta)+' existing host(s) (old hosts being removed from the system)\n') : '');
     var addStorageTh = storageDeltaTB!==0 ? ('- '+(storageDeltaTB>0?'เพิ่ม':'ลด')+' Storage Capacity '+fmt(Math.abs(storageDeltaTB),2)+' TB\n') : '';
     var addStorageEn = storageDeltaTB!==0 ? ('- '+(storageDeltaTB>0?'Add':'Reduce')+' storage capacity by '+fmt(Math.abs(storageDeltaTB),2)+' TB\n') : '';
 
@@ -3007,6 +3283,17 @@
         simState.hostOverride = {};
         populateSimHostChecklist(simState.D);
         simResetInputsToDefaults();
+        // Auto-fill CPU Ratio from Compute section's "100% vCPU Usable / Physical Cores"
+        var clusterName = e.target.value;
+        if(clusterName !== 'ALL' && simState.D && simState.D.clusterAgg[clusterName]){
+          var c = simState.D.clusterAgg[clusterName];
+          var cpuUtil = c.usageCount>0 ? (c.cpuUsageSum/c.usageCount) : 0;
+          var ratioFactor = cpuUtil>0 ? (c.vcpu*100/cpuUtil) : 0;
+          var ratioPerCore = (cpuUtil>0 && c.cores>0) ? (ratioFactor/c.cores) : 0;
+          if(ratioPerCore > 0){
+            document.getElementById('simCpuRatio').value = fmt(ratioPerCore, 2);
+          }
+        }
         recomputeSimulator();
       });
       ['simCoresPerHost','simRamPerHost','simStorageDeltaTB','simCpuRatio'].forEach(function(id){
@@ -3094,7 +3381,7 @@
     // ---- BOM / pricing request email (Thai + English) ----
     var szEmailTh = 'เรื่อง: ขอใบเสนอราคาและ BOM สำหรับจัดหาเซิร์ฟเวอร์ใหม่\n\n'+
       'เรียน ทีมงานฝ่ายขาย\n\n'+
-      'บริษัทมีความต้องการจัดหาเซิร์ฟเวอร์เพื่อรองรับ Workload ใหม่ ดังรายละเอียดต่อไปนี้\n\n'+
+      'The company needs to procure servers to support Workload ใหม่ ดังรายละเอียดต่อไปนี้\n\n'+
       'ความต้องการ Workload:\n'+
       '- vCPU: '+fmt(reqVcpu)+'\n'+
       '- vMemory: '+fmt(reqMemGB,0)+' GB\n'+
@@ -3240,8 +3527,8 @@
       var headerY = swY;
       var blockH = switchHeaderH + Math.max(1,rows.length)*(pgBoxH+pgGapY) - pgGapY;
       switchPos[sn] = {x:rightX, y:headerY, w:pgBoxW, h:switchHeaderH, cy:headerY+switchHeaderH/2};
-      svg += '<rect x="'+rightX+'" y="'+headerY+'" width="'+pgBoxW+'" height="'+switchHeaderH+'" rx="3" fill="#233042" stroke="#3A4A5E"/>';
-      svg += '<text x="'+(rightX+pgBoxW/2)+'" y="'+(headerY+19)+'" text-anchor="middle" font-size="11" fill="#E7ECF2" font-family="monospace" font-weight="600">'+esc(sn)+'</text>';
+      svg += '<rect x="'+rightX+'" y="'+headerY+'" width="'+pgBoxW+'" height="'+switchHeaderH+'" rx="4" fill="#475467" stroke="#475467"/>';
+      svg += '<text x="'+(rightX+pgBoxW/2)+'" y="'+(headerY+19)+'" text-anchor="middle" font-size="11" fill="#FFFFFF" font-family="monospace" font-weight="600">'+esc(sn)+'</text>';
       var rowY = headerY + switchHeaderH + 6;
       if(!rows.length){
         svg += '<text x="'+(rightX+pgBoxW/2)+'" y="'+(rowY+16)+'" text-anchor="middle" font-size="9.5" fill="#5C6B7A" font-family="monospace">(ไม่มี Port Group)</text>';
@@ -3256,9 +3543,9 @@
     // draw NIC boxes
     nics.forEach(function(n){
       var pos = nicPos[nicKey(n.name)];
-      svg += '<rect x="'+pos.x+'" y="'+pos.y+'" width="'+pos.w+'" height="'+pos.h+'" rx="3" fill="#1A222B" stroke="#3A4A5E"/>';
-      svg += '<text x="'+(pos.x+pos.w/2)+'" y="'+(pos.y+14)+'" text-anchor="middle" font-size="10.5" fill="#E7ECF2" font-family="monospace" font-weight="600">'+esc(n.name)+'</text>';
-      svg += '<text x="'+(pos.x+pos.w/2)+'" y="'+(pos.y+26)+'" text-anchor="middle" font-size="8.5" fill="#8B96A3" font-family="monospace">'+esc(n.speed||'-')+'</text>';
+      svg += '<rect x="'+pos.x+'" y="'+pos.y+'" width="'+pos.w+'" height="'+pos.h+'" rx="4" fill="#F2F4F7" stroke="#98A2B3"/>';
+      svg += '<text x="'+(pos.x+pos.w/2)+'" y="'+(pos.y+14)+'" text-anchor="middle" font-size="10.5" fill="#1D2939" font-family="monospace" font-weight="600">'+esc(n.name)+'</text>';
+      svg += '<text x="'+(pos.x+pos.w/2)+'" y="'+(pos.y+26)+'" text-anchor="middle" font-size="8.5" fill="#667085" font-family="monospace">'+esc(n.speed||'-')+'</text>';
     });
 
     var lineSvg = '';
@@ -3277,9 +3564,9 @@
       var x1=np.x+np.w, y1=np.cy, x2=sp.x, y2=sp.cy;
       var mx=(x1+x2)/2;
       var d = 'M'+x1+','+y1+' C'+mx+','+y1+' '+mx+','+y2+' '+x2+','+y2;
-      lineSvg += '<path d="'+d+'" fill="none" stroke="#5AA9E6" stroke-width="1.8" opacity="0.9"/>';
+      lineSvg += '<path d="'+d+'" fill="none" stroke="#2E90FA" stroke-width="2" opacity="0.9"/>';
       if(n.uplinkPort){
-        lineSvg += '<text x="'+((x1+x2)/2)+'" y="'+((y1+y2)/2-4)+'" text-anchor="middle" font-size="8" fill="#5AA9E6" font-family="monospace">'+esc(n.uplinkPort)+'</text>';
+        lineSvg += '<text x="'+((x1+x2)/2)+'" y="'+((y1+y2)/2-4)+'" text-anchor="middle" font-size="8" fill="#2E90FA" font-family="monospace">'+esc(n.uplinkPort)+'</text>';
       }
     });
 
@@ -3294,7 +3581,7 @@
         var x1=np.x+np.w, y1=np.cy, x2=pb.x, y2=pb.cy;
         var mx=(x1+x2)/2;
         var d = 'M'+x1+','+y1+' C'+mx+','+y1+' '+mx+','+y2+' '+x2+','+y2;
-        var stroke = cls==='active'?'#3ED2A0':(cls==='standby'?'#F0A857':'#4A5560');
+        var stroke = cls==='active'?'#12B76A':(cls==='standby'?'#F79009':'#98A2B3');
         var dash = cls==='standby' ? ' stroke-dasharray="5,4"' : (cls==='unused' ? ' stroke-dasharray="2,3"' : '');
         lineSvg += '<path d="'+d+'" fill="none" stroke="'+stroke+'" stroke-width="1.6"'+dash+' opacity="'+(cls==='unused'?'0.5':'0.9')+'"/>';
       }
@@ -3307,9 +3594,9 @@
     var pgSvg = '';
     pgBoxes.forEach(function(pb){
       var p = pb.p;
-      pgSvg += '<rect x="'+pb.x+'" y="'+pb.y+'" width="'+pb.w+'" height="'+pb.h+'" rx="3" fill="#1A222B" stroke="#3A4A5E"/>';
-      pgSvg += '<text x="'+(pb.x+8)+'" y="'+(pb.y+16)+'" font-size="10" fill="#E7ECF2" font-family="monospace" font-weight="600">'+esc((p.name||'').length>22?p.name.slice(0,22)+'…':p.name)+'</text>';
-      pgSvg += '<text x="'+(pb.x+8)+'" y="'+(pb.y+30)+'" font-size="8.5" fill="#8B96A3" font-family="monospace">VLAN '+esc(p.vlan!=null&&p.vlan!==''?p.vlan:'-')+'</text>';
+      pgSvg += '<rect x="'+pb.x+'" y="'+pb.y+'" width="'+pb.w+'" height="'+pb.h+'" rx="4" fill="#FFFFFF" stroke="#D0D5DD"/>';
+      pgSvg += '<text x="'+(pb.x+8)+'" y="'+(pb.y+16)+'" font-size="10" fill="#1D2939" font-family="monospace" font-weight="600">'+esc((p.name||'').length>22?p.name.slice(0,22)+'…':p.name)+'</text>';
+      pgSvg += '<text x="'+(pb.x+8)+'" y="'+(pb.y+30)+'" font-size="8.5" fill="#667085" font-family="monospace">VLAN '+esc(p.vlan!=null&&p.vlan!==''?p.vlan:'-')+'</text>';
     });
 
     var full = '<svg viewBox="0 0 '+svgW+' '+svgH+'" width="'+svgW+'" height="'+svgH+'" xmlns="http://www.w3.org/2000/svg">'+
@@ -3331,7 +3618,7 @@
     var nd = D.netDiag || {};
     var dbg = '<b>ชื่อชีตทั้งหมดในไฟล์:</b> '+esc((nd.allSheetNames||[]).join(', '))+'<br><br>';
     function fmtHeaders(label, headers){
-      return '<b>'+label+':</b> '+(headers ? esc(headers.join(', ')) : '<span style="color:var(--bad);">ไม่พบชีตนี้ (หรือไม่มีข้อมูล)</span>')+'<br>';
+      return '<b>'+label+':</b> '+(headers ? esc(headers.join(', ')) : '<span style="color:var(--bad);">ไม่พบชีตนี้ (หรือไม่have data)</span>')+'<br>';
     }
     dbg += fmtHeaders('vSwitch headers', nd.vSwitchHeaders);
     dbg += fmtHeaders('vPort headers', nd.vPortHeaders);
@@ -3355,7 +3642,7 @@
     }else{
       wrap.innerHTML = result.svg;
       if(!result.nicToSwitchDrawn && result.lineMatched===0){
-        diagNote.innerHTML = '<div class="empty-note" style="color:var(--warn);">⚠ ไม่พบคอลัมน์ "Switch" ในชีต vNIC สำหรับ host นี้ (ใช้บอกว่า NIC ไหนอัปลิงก์เข้า switch ไหน) และไม่พบข้อมูล Active/Standby NIC ระดับ Port Group เช่นกัน — เครื่องมือจึงวาดเส้นเชื่อมไม่ได้ ตรวจสอบหัวคอลัมน์จริงได้ที่กล่อง "ข้อมูลดิบสำหรับ Debug" ด้านล่าง</div>';
+        diagNote.innerHTML = '<div class="empty-note" style="color:var(--warn);">⚠ ไม่พบคอลัมน์ "Switch" ในชีต vNIC สำหรับ host นี้ (ใช้บอกว่า NIC ไหนอัปลิงก์เข้า switch ไหน) และไม่พบข้อมูล Active/Standby NIC ระดับ Port Group เช่นกัน — The tool cannot draw connection lines Check actual column headers in the box "ข้อมูลดิบสำหรับ Debug" ด้านล่าง</div>';
       }else if(result.lineAttempts>result.lineMatched){
         diagNote.innerHTML = '<div class="empty-note">จับคู่ NIC ได้ '+result.lineMatched+'/'+result.lineAttempts+' รายการ — ที่จับคู่ไม่ได้ (ชื่อ switch/NIC ไม่ตรงกัน): '+result.unmatchedNames.slice(0,10).map(esc).join(', ')+'</div>';
       }else{
@@ -3439,7 +3726,7 @@
 
     var tasks = [];
     tasks.push(['1', 'Pre-upgrade Assessment', 'ตรวจสอบ Interoperability Matrix, VMware Compatibility Guide, และสำรองข้อมูล (vCenter file-based backup, ESXi host profile/config backup)', '4 ชม.']);
-    tasks.push(['2', 'Snapshot / Backup Validation', 'ทดสอบ restore backup เพื่อยืนยันความสมบูรณ์ก่อนเริ่มอัปเกรดจริง', '2 ชม.']);
+    tasks.push(['2', 'Snapshot / Backup Validation', 'ทดสอบ restore backup To confirm completeness before starting the actual upgrade', '2 ชม.']);
     if(vcNeedsUpgrade){
       tasks.push(['3', 'Upgrade vCenter Server → '+vcTarget, 'อัปเกรดผ่าน VAMI (Update Manager) พร้อม snapshot ก่อนดำเนินการ'+(majorJump?' — ข้ามหลาย major version ควรตรวจสอบ upgrade path ทีละขั้นตามคำแนะนำ VMware':''), '3-4 ชม.']);
       tasks.push(['4', 'Post-vCenter Validation', 'ตรวจสอบ service, ตรวจ log, login vSphere Client, ตรวจการเชื่อมต่อ host/plugin ทั้งหมด', '2 ชม.']);
@@ -3449,7 +3736,7 @@
     }
     tasks.push([String(tasks.length+1), 'Upgrade VMware Tools & VM Hardware Version', 'ทยอยอัปเดตเป็นชุด (batch) ตามช่วง Maintenance Window เพื่อลดผลกระทบต่อ VM ที่ใช้งานจริง ('+vmCount+' VM)', fmt(vmToolsHours,0)+' ชม. (ประเมินแบบ batch ~20 VM/ชม.)']);
     tasks.push([String(tasks.length+1), 'Post-upgrade Smoke Test', 'ทดสอบ VM/Application หลัก, ตรวจ HA/DRS/vMotion, ตรวจ performance และ event log ผิดปกติ', '4-8 ชม.']);
-    tasks.push([String(tasks.length+1), 'Documentation & Handover', 'จัดทำเอกสารสรุปผลการอัปเกรด และส่งมอบให้ทีมงานที่เกี่ยวข้อง', '2 ชม.']);
+    tasks.push([String(tasks.length+1), 'Documentation & Handover', 'จัดทำเอกสารสรุปผลการอัปเกรด and deliver to the relevant team', '2 ชม.']);
 
     var totalLow = tasks.length; // just for tag count
     document.getElementById('upg-plan-tag').textContent = tasks.length+' tasks';
@@ -3459,7 +3746,7 @@
       '</tbody>';
 
     if(!vcNeedsUpgrade && !esxiNeedsUpgrade){
-      document.getElementById('tbl-upg-plan').insertAdjacentHTML('afterend', '<div class="empty-note">เวอร์ชันปลายทางที่เลือกไม่สูงกว่าเวอร์ชันปัจจุบัน — เลือกเวอร์ชันที่สูงกว่าเพื่อสร้างแผนอัปเกรด</div>');
+      document.getElementById('tbl-upg-plan').insertAdjacentHTML('afterend', '<div class="empty-note">เวอร์ชันปลายทางที่เลือกไม่Highกว่าเวอร์ชันปัจจุบัน — เลือกเวอร์ชันที่Highกว่าเพื่อสร้างแผนอัปเกรด</div>');
     }
   }
 
